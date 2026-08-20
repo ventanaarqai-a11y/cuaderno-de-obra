@@ -1,0 +1,1058 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>El Cuaderno de Obra</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Martian+Mono:wdth,wght@75..112.5,300..800&family=Prompt:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap">
+</head>
+<body>
+
+<style>
+/* ===================================================================
+   EL CUADERNO DE OBRA — sistema visual v1 (grayscale puro)
+   Fuente: Brand-Builder-OS/marcas/VENTANA/entregables/04_sistema_visual_lovable_v1
+   Diseño comprometido con un solo mundo visual (negro). Todo color se
+   pinta explícito desde token: la página no hereda el fondo del visor.
+   =================================================================== */
+:root {
+  --negro:    #000000;
+  --fondo-2:  #050505;
+  --panel:    #111111;
+  --panel-2:  #0d0d0d;
+  --panel-3:  #161616;
+  --linea:    #1c1c1c;
+  --linea-2:  #2a2a2a;
+  --tinta:    #ffffff;
+  --tinta-2:  #aaaaaa;
+  --tinta-3:  #888888;
+  --tinta-4:  #555555;
+  --tinta-5:  #3d3d3d;
+  --tinta-6:  #2a2a2a;
+  --papel:    #fafafa;
+
+  --ancho:    1200px;
+  --gutter:   40px;
+
+  /* DOS EJES, NADA EN EL MEDIO.
+     --grafico  = Oficía MONO Bold Comp, SIEMPRE en caja alta (aquí sustituida
+                  por Martian Mono, ver la nota de tipografía al pie de la home).
+     --lectura  = Prompt (Cadson Demak, SIL OFL) — la real, sin sustituir.
+     Prohibido el rango 13–16 px: es el tamaño que vuelve genérico cualquier bloque. */
+  --grafico: "Martian Mono", ui-monospace, "SF Mono", Consolas, monospace;
+  --lectura: "Prompt", "Helvetica Neue", Arial, sans-serif;
+
+  --ease: cubic-bezier(.16, 1, .3, 1);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--negro);
+  color: var(--tinta-2);
+  font-family: var(--lectura);
+  font-weight: 300;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+::selection { background: var(--tinta); color: var(--negro); }
+a { color: var(--tinta); text-decoration: none; }
+:focus-visible { outline: 2px solid var(--tinta); outline-offset: 3px; }
+img, svg { max-width: 100%; }
+
+/* ── Capas de fondo ───────────────────────────────────────────────── */
+.fondo-base, .fondo-grilla, .fondo-brillo {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+}
+.fondo-base { background: var(--fondo-2); }
+.fondo-grilla {
+  background-image:
+    repeating-linear-gradient(to right,  rgba(255,255,255,.026) 0 1px, transparent 1px 96px),
+    repeating-linear-gradient(to bottom, rgba(255,255,255,.026) 0 1px, transparent 1px 96px);
+}
+.fondo-brillo {
+  opacity: 0; transition: opacity .5s linear;
+  background-image:
+    repeating-linear-gradient(to right,  rgba(255,255,255,.42) 0 1px, transparent 1px 96px),
+    repeating-linear-gradient(to bottom, rgba(255,255,255,.42) 0 1px, transparent 1px 96px);
+  -webkit-mask-image: radial-gradient(circle 240px at 50% 50%, #000 0%, rgba(0,0,0,.4) 46%, transparent 72%);
+          mask-image: radial-gradient(circle 240px at 50% 50%, #000 0%, rgba(0,0,0,.4) 46%, transparent 72%);
+}
+
+/* ── Envoltura ────────────────────────────────────────────────────── */
+.hoja { position: relative; z-index: 2; }
+.contenedor { max-width: var(--ancho); margin: 0 auto; padding-left: var(--gutter); padding-right: var(--gutter); }
+.seccion { padding-top: 108px; padding-bottom: 108px; }
+.seccion--corta { padding-top: 72px; padding-bottom: 72px; }
+
+/* ── Tipografía ───────────────────────────────────────────────────── */
+/* NIVEL GRÁFICO — condensada, pesada, siempre caja alta. */
+.display {
+  font-family: var(--grafico); font-weight: 700;
+  font-variation-settings: "wdth" 75;
+  text-transform: uppercase;
+  letter-spacing: -.02em; line-height: 1.04; color: var(--tinta);
+  text-wrap: balance; margin: 0;
+}
+.d-xxl { font-size: clamp(44px, 12.5vw, 168px); line-height: .9; letter-spacing: -.035em; }
+.d-xl  { font-size: clamp(26px, 4.8vw, 60px); line-height: 1.0; }
+.d-l   { font-size: clamp(22px, 3.4vw, 42px); line-height: 1.06; }
+.d-m   { font-size: clamp(19px, 2.2vw, 27px); line-height: 1.12; }
+.tenue { font-weight: 300; font-variation-settings: "wdth" 90; color: var(--tinta-2); }
+
+/* NIVEL UTILITARIO — 8–12 px, caja alta, tracking abierto. */
+.mono {
+  font-family: var(--grafico); font-weight: 400; font-variation-settings: "wdth" 90;
+  font-size: 9px; letter-spacing: .28em;
+  text-transform: uppercase; color: var(--tinta-5);
+}
+.mono-11 { font-family: var(--grafico); font-weight: 400; font-size: 11px; letter-spacing: .04em; color: var(--tinta-3); }
+.mono-c { color: var(--tinta-3); }
+
+/* NIVEL LECTURA — Prompt, 17–21 px. Nada aterriza entre 13 y 16. */
+.prosa { font-family: var(--lectura); font-size: 19px; line-height: 1.7; color: var(--tinta-2); max-width: 65ch; text-wrap: pretty; margin: 0; }
+.prosa-s { font-family: var(--lectura); font-size: 17px; line-height: 1.65; color: var(--tinta-3); max-width: 62ch; text-wrap: pretty; margin: 0; }
+.tabnum { font-variant-numeric: tabular-nums; }
+.pila { display: flex; flex-direction: column; }
+
+/* ── Cota: la línea de dimensión del plano, usada como separador ──── */
+.cota { display: flex; align-items: center; gap: 14px; }
+.cota-linea { flex: 1; height: 1px; background: var(--linea); position: relative; }
+.cota-linea::before, .cota-linea::after {
+  content: ""; position: absolute; top: -4px; width: 1px; height: 9px; background: var(--linea-2);
+}
+.cota-linea::before { left: 0; } .cota-linea::after { right: 0; }
+.regla { height: 1px; background: var(--linea); border: 0; margin: 0; }
+
+/* ── Rótulo: el sello del plano ───────────────────────────────────── */
+.rotulo { display: grid; grid-template-columns: repeat(4, 1fr); background: var(--linea); gap: 1px; border: 1px solid var(--linea); }
+.rotulo > div { background: var(--panel-2); padding: 12px 14px; }
+.rotulo dt { font-family: var(--grafico); font-size: 8.5px; letter-spacing: .26em; text-transform: uppercase; color: var(--tinta-5); margin: 0; }
+.rotulo dd { font-family: var(--grafico); font-size: 12px; letter-spacing: .04em; color: var(--tinta-2); margin: 8px 0 0; font-variant-numeric: tabular-nums; }
+
+/* ── Ventana falsa ────────────────────────────────────────────────── */
+.ventana { background: var(--panel); border: 1px solid var(--linea); box-shadow: 0 40px 120px rgba(0,0,0,.65); }
+.ventana-barra {
+  display: flex; align-items: center; justify-content: space-between; gap: 20px;
+  height: 46px; padding: 0 16px; border-bottom: 1px solid var(--linea); background: var(--panel-2);
+}
+.semaforo { display: flex; gap: 8px; flex: 0 0 auto; }
+.semaforo i { width: 9px; height: 9px; border-radius: 50%; display: block; }
+.semaforo i:nth-child(1) { background: var(--tinta-4); }
+.semaforo i:nth-child(2) { background: var(--tinta-5); }
+.semaforo i:nth-child(3) { background: var(--tinta-6); }
+.ventana-nombre { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ventana-cuerpo { padding: 60px 52px 52px; }
+
+/* ── Luces de estado ──────────────────────────────────────────────── */
+.luz { width: 9px; height: 9px; border-radius: 50%; display: block; flex: 0 0 auto; }
+.luz--hecho { background: var(--papel); box-shadow: 0 0 10px 2px rgba(255,255,255,.20); animation: pulso 3.4s ease-in-out infinite; }
+.luz--pendiente { background: var(--tinta); animation: parpadeo 1.3s steps(1, end) infinite; }
+.luz--bloqueado { background: transparent; box-shadow: inset 0 0 0 1px var(--tinta-4); }
+@keyframes pulso { 0%,100% { box-shadow: 0 0 10px 2px rgba(255,255,255,.20); } 50% { box-shadow: 0 0 18px 5px rgba(255,255,255,.06); } }
+@keyframes parpadeo { 0%,44% { opacity: 1; } 52%,94% { opacity: .16; } 100% { opacity: 1; } }
+
+/* ── Checklist ────────────────────────────────────────────────────── */
+.lista { background: var(--linea); display: grid; gap: 1px; margin: 0; padding: 0; list-style: none; }
+.lista li { background: var(--panel); padding: 18px 22px; display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: center; }
+.lista li > span { font-family: var(--lectura); font-size: 17px; line-height: 1.5; color: var(--tinta-2); }
+.lista li[data-estado="pendiente"] > span { color: var(--tinta-3); }
+
+/* ── Chips ────────────────────────────────────────────────────────── */
+.chip {
+  font-family: var(--grafico); font-size: 9px; letter-spacing: .18em; text-transform: uppercase;
+  padding: 5px 9px; color: var(--tinta-3); box-shadow: inset 0 0 0 1px var(--linea-2);
+  display: inline-block; white-space: nowrap; background: transparent;
+}
+.chip--solido { background: var(--papel); color: var(--negro); box-shadow: none; }
+
+/* ── Botones ──────────────────────────────────────────────────────── */
+.boton {
+  font-family: var(--grafico); font-weight: 500; font-size: 11px; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--negro); background: var(--papel); padding: 15px 26px; border-radius: 4px;
+  border: 0; cursor: pointer; display: inline-block; transition: background .2s ease, color .2s ease;
+}
+.boton:hover { background: var(--tinta); color: var(--negro); }
+.boton--fantasma { background: transparent; color: var(--tinta); box-shadow: inset 0 0 0 1px var(--linea-2); }
+.boton--fantasma:hover { background: var(--panel-3); color: var(--tinta); }
+
+/* ── Nav pill ─────────────────────────────────────────────────────── */
+.pill {
+  position: fixed; top: 20px; left: 50%; transform: translate(-50%, -14px); z-index: 40;
+  opacity: 0; pointer-events: none;
+  transition: opacity .45s var(--ease), transform .45s var(--ease);
+  display: flex; align-items: center; gap: 20px;
+  padding: 10px 12px 10px 20px; background: rgba(17,17,17,.86);
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid var(--linea);
+}
+.pill.visible { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+.pill nav { display: flex; gap: 18px; }
+.pill nav a { color: var(--tinta-4); transition: color .2s ease; }
+.pill nav a:hover, .pill nav a[aria-current="page"] { color: var(--tinta); }
+.pill .boton { padding: 8px 14px; font-size: 12px; border-radius: 3px; }
+
+/* ── Reveal por scroll ────────────────────────────────────────────── */
+[data-reveal] { opacity: 0; transform: translateY(38px); transition: opacity .9s var(--ease), transform .9s var(--ease); }
+[data-reveal-x] { opacity: 0; transform: translateX(-28px); transition: opacity .75s var(--ease), transform .75s var(--ease); }
+.visto { opacity: 1 !important; transform: none !important; }
+
+/* ── Índice: feed de entradas ─────────────────────────────────────── */
+.filtros { display: flex; flex-wrap: wrap; gap: 1px; background: var(--linea); border: 1px solid var(--linea); }
+.filtros button {
+  font-family: var(--grafico); font-size: 9px; letter-spacing: .26em; text-transform: uppercase;
+  background: var(--panel-2); color: var(--tinta-4); border: 0; padding: 13px 18px; cursor: pointer;
+  transition: color .2s ease, background .2s ease;
+}
+.filtros button:hover { color: var(--tinta-2); }
+.filtros button[aria-pressed="true"] { background: var(--papel); color: var(--negro); }
+
+/* ── El cajón de carpetas ─────────────────────────────────────────────
+   Adaptado de recent.design/i/ovkkk8y-scroll-driven-reviews-drawer.
+   El scroll abre la carpeta activa y saca su ficha. Invertido respecto
+   de la referencia: allá la ficha es oscura sobre crema, acá es la más
+   oscura de todas sobre carpetas que aclaran. La relación se mantiene. */
+.cajon-pista { position: relative; }
+.cajon { position: sticky; top: 0; min-height: 100svh; display: flex; flex-direction: column; justify-content: center; padding: 40px 0 56px; }
+.cajon-marco { position: relative; }
+
+.carpeta {
+  position: relative; display: block; width: 100%; border: 0; padding: 0;
+  background: none; cursor: pointer; text-align: left; font-family: inherit;
+  transition: transform .6s var(--ease), opacity .6s var(--ease);
+}
+.carpeta-cuerpo {
+  position: relative; background: var(--panel-3); border: 1px solid var(--linea-2);
+  border-bottom: 0; height: 40px;
+  transition: background .3s ease, border-color .3s ease;
+}
+/* La pestaña: el hombro angulado del separador de archivo. */
+.carpeta-pestana {
+  position: absolute; bottom: 100%; height: 19px; min-width: 148px;
+  background: var(--panel-3); border: 1px solid var(--linea-2); border-bottom: 0;
+  clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 100%, 0 100%);
+  display: flex; align-items: center; justify-content: center; padding: 0 20px;
+  transition: background .3s ease;
+}
+.carpeta:hover .carpeta-cuerpo,
+.carpeta:hover .carpeta-pestana { background: var(--panel-2); border-color: var(--tinta-5); }
+.carpeta[aria-current="true"] .carpeta-cuerpo,
+.carpeta[aria-current="true"] .carpeta-pestana { background: var(--panel-2); border-color: var(--tinta-4); }
+
+/* Separador de área: la pestaña rellena, como las negras de la referencia. */
+.divisor { position: relative; height: 19px; }
+.divisor span {
+  position: absolute; bottom: 0; height: 19px; min-width: 96px;
+  background: var(--papel); color: var(--negro);
+  clip-path: polygon(12px 0, calc(100% - 12px) 0, 100% 100%, 0 100%);
+  display: flex; align-items: center; justify-content: center; padding: 0 18px;
+}
+.divisor span.mono { color: var(--negro); font-size: 9px; letter-spacing: .22em; }
+
+/* La ficha que sale al abrirse la carpeta. */
+.ficha {
+  position: absolute; left: 0; right: 0; z-index: 5;
+  background: var(--negro); border: 1px solid var(--tinta-4);
+  padding: 20px 24px 22px; display: grid; gap: 18px;
+  opacity: 0; transform: translateY(14px); pointer-events: none;
+  transition: opacity .45s var(--ease), transform .45s var(--ease);
+}
+.ficha.abierta { opacity: 1; transform: translateY(0); pointer-events: auto; }
+.ficha-cita { font-family: var(--grafico); font-weight: 400; font-size: 12px; line-height: 1.85; color: var(--tinta); letter-spacing: .01em; margin: 0; max-width: 74ch; }
+.ficha-pie { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; align-items: baseline; }
+
+.cajon-base {
+  background: var(--panel-2); border: 1px solid var(--linea-2);
+  padding: 26px 24px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px 24px;
+}
+
+/* ── Diagramas ────────────────────────────────────────────────────── */
+.lamina { background: var(--panel-2); border: 1px solid var(--linea); }
+.lamina-cabecera { display: flex; align-items: baseline; justify-content: space-between; gap: 20px; padding: 14px 18px; border-bottom: 1px solid var(--linea); flex-wrap: wrap; }
+.lamina-lienzo { padding: 26px 18px; overflow-x: auto; }
+.lamina-pie { padding: 12px 18px; border-top: 1px solid var(--linea); }
+.svg-diagrama { display: block; width: 100%; height: auto; min-width: 520px; }
+.trazo { stroke: var(--linea-2); stroke-width: 1; fill: none; }
+.trazo-fino { stroke: var(--linea); stroke-width: 1; fill: none; }
+.trazo-vivo { stroke: var(--papel); stroke-width: 1; fill: none; }
+.rot { font-family: var(--grafico); font-size: 8px; letter-spacing: .22em; text-transform: uppercase; fill: var(--tinta-5); }
+.rot-c { fill: var(--tinta-3); }
+.rot-v { fill: var(--tinta); }
+.num { font-family: var(--grafico); font-weight: 600; font-size: 12px; fill: var(--tinta); letter-spacing: -.02em; }
+.dibuja { stroke-dasharray: var(--largo); stroke-dashoffset: var(--largo); transition: stroke-dashoffset 1.3s var(--ease); }
+.visto .dibuja, .lamina.visto .dibuja { stroke-dashoffset: 0; }
+.aparece { opacity: 0; transition: opacity .5s ease; }
+.lamina.visto .aparece { opacity: 1; }
+
+/* ── Barra de cifra con denominador ───────────────────────────────── */
+.barra { position: relative; height: 14px; background: var(--panel-2); box-shadow: inset 0 0 0 1px var(--linea-2); }
+.barra i { position: absolute; inset: 0 auto 0 0; width: 0; background: var(--papel); display: block; transition: width 1.4s var(--ease); }
+.barra u { position: absolute; top: -6px; bottom: -6px; left: 0; width: 2px; background: var(--tinta); display: block; transition: left 1.4s var(--ease); }
+
+/* ── OG ───────────────────────────────────────────────────────────── */
+.og {
+  aspect-ratio: 1200 / 630; background: var(--negro); border: 1px solid var(--linea);
+  padding: 6% 6.5%; display: flex; flex-direction: column; justify-content: space-between;
+  background-image:
+    repeating-linear-gradient(to right,  rgba(255,255,255,.04) 0 1px, transparent 1px 64px),
+    repeating-linear-gradient(to bottom, rgba(255,255,255,.04) 0 1px, transparent 1px 64px);
+}
+
+/* ── Grillas utilitarias ──────────────────────────────────────────── */
+.g-2 { display: grid; grid-template-columns: 7fr 5fr; gap: 72px; align-items: start; }
+.g-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--linea); }
+.g-4 > div { background: var(--panel); padding: 20px; }
+
+@media (max-width: 900px) {
+  :root { --gutter: 22px; }
+  .ventana-cuerpo { padding: 36px 24px 32px; }
+  .seccion { padding-top: 72px; padding-bottom: 72px; }
+  .g-2 { grid-template-columns: 1fr; gap: 36px; }
+  .g-4 { grid-template-columns: 1fr 1fr; }
+  .rotulo { grid-template-columns: 1fr 1fr; }
+  .carpeta-pestana { min-width: 108px; padding: 0 12px; }
+  .ficha { padding: 16px 16px 18px; }
+  .ficha-cita { font-size: 11px; line-height: 1.75; }
+  .cajon { min-height: auto; position: static; padding: 24px 0 40px; }
+  .prosa { font-size: 17px; }
+  .pill nav { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal], [data-reveal-x] { opacity: 1 !important; transform: none !important; transition: none !important; }
+  .luz { animation: none !important; }
+  .fondo-brillo { display: none; }
+  .dibuja { stroke-dashoffset: 0 !important; transition: none !important; }
+  .aparece { opacity: 1 !important; }
+  .barra i, .barra u { transition: none !important; }
+  /* El cajón sigue siendo usable: cambia de ficha al instante, sin animar,
+     y sin recorrido de scroll de más — se maneja con hover o con el teclado. */
+  .ficha, .carpeta, .carpeta-cuerpo, .carpeta-pestana { transition: none !important; }
+  .cajon { position: static; min-height: auto; }
+}
+</style>
+
+<div class="fondo-base"></div>
+<div class="fondo-grilla" id="grilla"></div>
+<div class="fondo-brillo" id="brillo"></div>
+
+<div class="pill" id="pill">
+  <span class="mono" id="pill-titulo">Cuaderno de obra</span>
+  <nav>
+    <a class="mono" href="#/">Última</a>
+    <a class="mono" href="#/entradas">Entradas</a>
+    <a class="mono" href="#/ventana">Qué es VENTANA</a>
+  </nav>
+  <a class="boton" href="#/entradas">Seguir el progreso</a>
+</div>
+
+<div class="hoja">
+  <header class="contenedor" style="padding-top:44px; padding-bottom:30px;">
+    <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:flex-start; gap:24px 40px;">
+      <div class="pila" style="gap:14px; max-width:720px;">
+        <a href="#/" class="display" style="font-size:clamp(19px,2.4vw,30px); line-height:1; letter-spacing:.02em; text-transform:uppercase;">El Cuaderno de Obra</a>
+        <p class="prosa-s">VENTANA es un diagnóstico de timing inmobiliario en LATAM. Esta página registra su construcción, en público, semana a semana.</p>
+      </div>
+      <span class="mono tabnum" style="padding-top:6px;" id="fecha-hoy">19.08.2026</span>
+    </div>
+    <div class="regla" style="margin-top:30px;"></div>
+  </header>
+
+  <main id="vista"></main>
+
+  <footer class="contenedor" style="padding-bottom:56px;">
+    <div class="regla" style="margin-bottom:20px;"></div>
+    <div style="display:flex; flex-wrap:wrap; justify-content:space-between; gap:14px 40px;">
+      <span class="mono">El Cuaderno de Obra — registro público de VENTANA</span>
+      <span class="mono">Sin beta abierta · Sin usuarios externos</span>
+    </div>
+    <p class="mono" style="margin:20px 0 0; letter-spacing:.2em; max-width:78ch; line-height:2;">
+      Nota de tipografía — el eje gráfico definitivo es Oficía MONO (Studio Charlotte Rohde), que es
+      comercial y se carga en el sitio real con su licencia web. En este prototipo está sustituida por
+      Martian Mono. El eje de lectura sí es el definitivo: Prompt, de Cadson Demak.
+    </p>
+    <div>
+    </div>
+  </footer>
+</div>
+
+<script>
+/* ===================================================================
+   MODELO DE CONTENIDO — una entrada por semana.
+   Toda `cifra` lleva valor, denominador, qué mide y fuente. Es la regla
+   de NUCLEO.md metida en el modelo de datos: sin fuente, no se renderiza.
+   El pipeline semanal escribe exactamente esta estructura.
+   =================================================================== */
+const ENTRADAS = /*__ENTRADAS__*/[];
+
+/* Números verificados. Fuente: Marketing-OS/NUCLEO.md §2 y web/src/lib/content.ts */
+const AGENTES = [
+  { cod: "MA",  nombre: "Mercado",       peso: 13.0, unidad: "municipio" },
+  { cod: "MC",  nombre: "Macro",         peso: 13.0, unidad: "país" },
+  { cod: "PO",  nombre: "Político",      peso: 12.5, unidad: "país" },
+  { cod: "MF",  nombre: "Comportamiento", peso: 11.5, unidad: "país" },
+  { cod: "CM",  nombre: "Comercial",     peso: 10.4, unidad: "municipio" },
+  { cod: "FI",  nombre: "Financiero",    peso: 8.6,  unidad: "país" },
+  { cod: "CO",  nombre: "Construcción",  peso: 7.0,  unidad: "municipio" },
+  { cod: "RE",  nombre: "Regulatorio",   peso: 7.0,  unidad: "municipio" },
+  { cod: "TE",  nombre: "Técnico",       peso: 4.5,  unidad: "proyecto" },
+  { cod: "MEP", nombre: "Cambiario",     peso: 4.5,  unidad: "país (solo AR)" },
+  { cod: "SE",  nombre: "Sísmico",       peso: 4.0,  unidad: "coordenada" },
+  { cod: "AMB", nombre: "Ambiental",     peso: 4.0,  unidad: "coordenada" }
+];
+
+const AREAS = { datos: "Datos", agentes: "Agentes", infra: "Infraestructura", producto: "Producto" };
+
+/* ── Utilidades ───────────────────────────────────────────────────── */
+const HOY = new Date("2026-08-19T12:00:00");
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const nf = n => n.toLocaleString("es-AR");
+
+function fechaLarga(iso) {
+  const m = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+  const d = new Date(iso + "T12:00:00");
+  return d.getDate() + " de " + m[d.getMonth()] + " de " + d.getFullYear();
+}
+function fechaRelativa(iso) {
+  const dias = Math.round((HOY - new Date(iso + "T12:00:00")) / 86400000);
+  if (dias <= 0) return "hoy";
+  if (dias === 1) return "ayer";
+  if (dias < 7) return "hace " + dias + " días";
+  if (dias < 14) return "hace 1 semana";
+  if (dias < 31) return "hace " + Math.floor(dias / 7) + " semanas";
+  return "hace " + Math.floor(dias / 30) + " meses";
+}
+const pct = c => (c.valor / c.denominador) * 100;
+function pctTexto(c) {
+  const v = pct(c);
+  return (v < 10 ? v.toFixed(1) : Math.round(v)).toString().replace(".", ",") + " %";
+}
+
+/* ===================================================================
+   DIAGRAMAS — lenguaje de plano técnico: hairlines, cotas, rótulos en
+   monoespaciada, tramas. Se dibujan solos al entrar en pantalla.
+   =================================================================== */
+function laminaHTML(titulo, escala, svg, pie) {
+  return '<figure class="lamina" data-lamina style="margin:0;">' +
+    '<figcaption class="lamina-cabecera">' +
+      '<span class="mono mono-c">' + esc(titulo) + '</span>' +
+      '<span class="mono">' + esc(escala) + '</span>' +
+    '</figcaption>' +
+    '<div class="lamina-lienzo">' + svg + '</div>' +
+    '<div class="lamina-pie"><span class="mono">' + esc(pie) + '</span></div>' +
+  '</figure>';
+}
+
+/* Campo de 2.117 municipios: 29 filas × 73 columnas. Encendidos, los medidos. */
+function svgCobertura(cifra) {
+  const COLS = 73, FILAS = 29, PASO = 13, R = 2.6, X0 = 34, Y0 = 30;
+  const encendidos = new Set();
+  /* Distribución estable, no aleatoria: siempre dibuja el mismo campo. */
+  let s = 7;
+  while (encendidos.size < cifra.valor) { s = (s * 48271) % 2117; encendidos.add(s); }
+  let dots = "";
+  for (let i = 0; i < COLS * FILAS; i++) {
+    const x = X0 + (i % COLS) * PASO, y = Y0 + Math.floor(i / COLS) * PASO;
+    dots += encendidos.has(i)
+      ? '<rect x="' + (x - R) + '" y="' + (y - R) + '" width="' + (R * 2) + '" height="' + (R * 2) + '" fill="#fafafa"/>'
+      : '<rect x="' + (x - 1.2) + '" y="' + (y - 1.2) + '" width="2.4" height="2.4" fill="#333333"/>';
+  }
+  const W = X0 * 2 + (COLS - 1) * PASO, H = Y0 + FILAS * PASO + 46;
+  const yc = Y0 + (FILAS - 1) * PASO + 26;
+  return '<svg class="svg-diagrama" viewBox="0 0 ' + W + ' ' + H + '" role="img" ' +
+    'aria-label="' + esc(cifra.valor + " de " + cifra.denominador + " municipios con dato medido") + '">' +
+    '<text class="rot" x="' + X0 + '" y="16">Argentina · un cuadro = un municipio</text>' +
+    '<text class="rot rot-v" x="' + (W - X0) + '" y="16" text-anchor="end">' + cifra.valor + ' medidos</text>' +
+    dots +
+    '<g class="aparece">' +
+      '<line class="trazo-fino" x1="' + X0 + '" y1="' + yc + '" x2="' + (W - X0) + '" y2="' + yc + '"/>' +
+      '<line class="trazo" x1="' + X0 + '" y1="' + (yc - 4) + '" x2="' + X0 + '" y2="' + (yc + 4) + '"/>' +
+      '<line class="trazo" x1="' + (W - X0) + '" y1="' + (yc - 4) + '" x2="' + (W - X0) + '" y2="' + (yc + 4) + '"/>' +
+      '<text class="rot rot-c" x="' + (W / 2) + '" y="' + (yc + 20) + '" text-anchor="middle">' +
+        nf(cifra.denominador) + ' municipios · ' + pctTexto(cifra) + ' con dato</text>' +
+    '</g>' +
+  '</svg>';
+}
+
+/* Los doce agentes por peso. El de la entrada, resaltado. */
+function svgAgentes(destacado) {
+  const X0 = 128, ANCHO = 620, H = 26, Y0 = 30, MAX = 13.0;
+  let filas = "";
+  AGENTES.forEach((a, i) => {
+    const y = Y0 + i * H, w = (a.peso / MAX) * ANCHO;
+    const vivo = a.cod === destacado;
+    filas +=
+      '<text class="rot ' + (vivo ? "rot-v" : "rot-c") + '" x="' + (X0 - 12) + '" y="' + (y + 11) + '" text-anchor="end">' + esc(a.nombre) + '</text>' +
+      '<rect x="' + X0 + '" y="' + (y + 3) + '" width="' + ANCHO + '" height="11" fill="#161616"/>' +
+      '<rect class="aparece" x="' + X0 + '" y="' + (y + 3) + '" width="' + w.toFixed(1) + '" height="11" fill="' + (vivo ? "#fafafa" : "#3d3d3d") + '" style="transition-delay:' + (i * 55) + 'ms"/>' +
+      '<text class="rot ' + (vivo ? "rot-v" : "") + ' tabnum" x="' + (X0 + ANCHO + 12) + '" y="' + (y + 11) + '">' + a.peso.toFixed(1).replace(".", ",") + ' %</text>' +
+      '<text class="rot" x="' + (X0 + ANCHO + 74) + '" y="' + (y + 11) + '">' + esc(a.unidad) + '</text>';
+  });
+  const W = X0 + ANCHO + 190, ALTO = Y0 + AGENTES.length * H + 34;
+  return '<svg class="svg-diagrama" viewBox="0 0 ' + W + ' ' + ALTO + '" role="img" aria-label="Los doce agentes y su peso en el puntaje">' +
+    '<text class="rot" x="0" y="16">Agente</text>' +
+    '<text class="rot" x="' + X0 + '" y="16">Peso en el puntaje (Argentina)</text>' +
+    '<text class="rot" x="' + (X0 + ANCHO + 74) + '" y="16">Unidad</text>' +
+    filas +
+    '<line class="trazo-fino" x1="' + X0 + '" y1="' + (Y0 + AGENTES.length * H + 8) + '" x2="' + (X0 + ANCHO) + '" y2="' + (Y0 + AGENTES.length * H + 8) + '"/>' +
+    '<text class="rot rot-c" x="' + X0 + '" y="' + (Y0 + AGENTES.length * H + 26) + '">Suma 100 % · en Ecuador son 11: no hay factor cambiario</text>' +
+  '</svg>';
+}
+
+/* Cadena de recolección, con el cuello de botella marcado con trama. */
+function svgPipeline(cuello) {
+  const pasos = [
+    { t: "Fuente", s: "Publicación oficial, cámara o prensa" },
+    { t: "Extracción", s: "El modelo transcribe lo que dice" },
+    { t: "Verificación", s: "Cada cifra tiene que estar literal" },
+    { t: "Corpus", s: "Se guarda con fuente y fecha" },
+    { t: "Agente", s: "Llega al razonamiento, o no existe" }
+  ];
+  const W = 980, CAJA = 168, GAP = (W - pasos.length * CAJA) / (pasos.length - 1), Y = 44, ALTO = 74;
+  let g = '<defs><pattern id="trama" width="6" height="6" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">' +
+          '<line x1="0" y1="0" x2="0" y2="6" stroke="#3d3d3d" stroke-width="1.4"/></pattern></defs>';
+  pasos.forEach((p, i) => {
+    const x = i * (CAJA + GAP), vivo = i === cuello;
+    g += '<rect x="' + x + '" y="' + Y + '" width="' + CAJA + '" height="' + ALTO + '" fill="' + (vivo ? "url(#trama)" : "#111111") + '" stroke="' + (vivo ? "#fafafa" : "#2a2a2a") + '" stroke-width="1"/>' +
+         '<text class="rot ' + (vivo ? "rot-v" : "rot-c") + '" x="' + (x + 14) + '" y="' + (Y + 26) + '">' + esc(p.t) + '</text>' +
+         '<foreignObject x="' + (x + 14) + '" y="' + (Y + 34) + '" width="' + (CAJA - 28) + '" height="' + (ALTO - 40) + '">' +
+           '<div xmlns="http://www.w3.org/1999/xhtml" style="font-family:Prompt,sans-serif;font-weight:300;font-size:11px;line-height:1.42;color:#888888;">' + esc(p.s) + '</div>' +
+         '</foreignObject>' +
+         '<text class="rot" x="' + (x + CAJA - 12) + '" y="' + (Y + 26) + '" text-anchor="end">' + String(i + 1).padStart(2, "0") + '</text>';
+    if (i < pasos.length - 1) {
+      const xa = x + CAJA, xb = x + CAJA + GAP;
+      g += '<line class="trazo dibuja" style="--largo:' + GAP + '; transition-delay:' + (i * 160) + 'ms" x1="' + xa + '" y1="' + (Y + ALTO / 2) + '" x2="' + xb + '" y2="' + (Y + ALTO / 2) + '"/>' +
+           '<path class="trazo aparece" style="transition-delay:' + (i * 160 + 700) + 'ms" d="M' + (xb - 6) + ' ' + (Y + ALTO / 2 - 4) + 'L' + xb + ' ' + (Y + ALTO / 2) + 'L' + (xb - 6) + ' ' + (Y + ALTO / 2 + 4) + '"/>';
+    }
+  });
+  const xc = cuello * (CAJA + GAP);
+  g += '<g class="aparece" style="transition-delay:900ms">' +
+       '<line class="trazo" x1="' + (xc + CAJA / 2) + '" y1="' + (Y + ALTO + 6) + '" x2="' + (xc + CAJA / 2) + '" y2="' + (Y + ALTO + 22) + '"/>' +
+       '<text class="rot rot-v" x="' + (xc + CAJA / 2) + '" y="' + (Y + ALTO + 36) + '" text-anchor="middle">Acá estaba el cuello</text></g>';
+  return '<svg class="svg-diagrama" viewBox="-2 0 ' + (W + 4) + ' ' + (Y + ALTO + 54) + '" role="img" ' +
+    'aria-label="Cadena de recolección de datos, con el cuello de botella marcado">' +
+    '<text class="rot" x="0" y="18">Cómo un dato llega al razonamiento del agente</text>' + g + '</svg>';
+}
+
+/* Los tres estados que es fácil confundir. */
+function svgEstados() {
+  const estados = [
+    { t: "Guardado", s: "En el historial de esta máquina", ok: true },
+    { t: "Publicado", s: "En el servidor, visible desde cualquier lado", ok: true },
+    { t: "En producción", s: "Es lo que corre para el usuario", ok: false }
+  ];
+  const W = 860, CAJA = 252, GAP = (W - 3 * CAJA) / 2, Y = 40, ALTO = 108;
+  let g = "";
+  estados.forEach((e, i) => {
+    const x = i * (CAJA + GAP);
+    g += '<rect x="' + x + '" y="' + Y + '" width="' + CAJA + '" height="' + ALTO + '" fill="#111111" stroke="' + (e.ok ? "#2a2a2a" : "#555555") + '"/>' +
+         '<text class="rot ' + (e.ok ? "rot-v" : "rot-c") + '" x="' + (x + 18) + '" y="' + (Y + 30) + '">' + esc(e.t) + '</text>' +
+         '<foreignObject x="' + (x + 18) + '" y="' + (Y + 42) + '" width="' + (CAJA - 36) + '" height="40">' +
+           '<div xmlns="http://www.w3.org/1999/xhtml" style="font-family:Prompt,sans-serif;font-weight:300;font-size:12px;line-height:1.45;color:#888888;">' + esc(e.s) + '</div>' +
+         '</foreignObject>';
+    g += e.ok
+      ? '<path class="trazo-vivo dibuja aparece" style="--largo:26; transition-delay:' + (i * 200) + 'ms" d="M' + (x + 18) + ' ' + (Y + ALTO - 22) + 'l7 7 13 -15"/>'
+      : '<g class="aparece" style="transition-delay:400ms">' +
+        '<line stroke="#555555" x1="' + (x + 18) + '" y1="' + (Y + ALTO - 30) + '" x2="' + (x + 36) + '" y2="' + (Y + ALTO - 12) + '"/>' +
+        '<line stroke="#555555" x1="' + (x + 36) + '" y1="' + (Y + ALTO - 30) + '" x2="' + (x + 18) + '" y2="' + (Y + ALTO - 12) + '"/></g>';
+    if (i < 2) {
+      const xb = x + CAJA + GAP;
+      g += '<line class="trazo dibuja" style="--largo:' + GAP + '; transition-delay:' + (i * 200) + 'ms" x1="' + (x + CAJA) + '" y1="' + (Y + ALTO / 2) + '" x2="' + xb + '" y2="' + (Y + ALTO / 2) + '"/>';
+    }
+  });
+  return '<svg class="svg-diagrama" viewBox="-2 0 ' + (W + 4) + ' ' + (Y + ALTO + 34) + '" role="img" ' +
+    'aria-label="Guardado y publicado están hechos; en producción no">' +
+    '<text class="rot" x="0" y="18">Tres estados distintos del mismo trabajo</text>' + g +
+    '<text class="rot rot-c" x="0" y="' + (Y + ALTO + 26) + '">El programa de datos está en los dos primeros. Todavía no en el tercero.</text></svg>';
+}
+
+function diagramaDe(e) {
+  if (e.diagrama === "cobertura") return laminaHTML("Cobertura de mercado — Argentina", "Lám. 01 · esc. 1 cuadro : 1 municipio", svgCobertura(e.cifra), "Fuente: " + e.cifra.fuente);
+  if (e.diagrama === "agentes")   return laminaHTML("Los doce agentes y su peso", "Lám. 02 · pesos de Argentina", svgAgentes("MA"), "Fuente: web/src/lib/content.ts · NUCLEO.md §2");
+  if (e.diagrama === "pipeline")  return laminaHTML("De la fuente al razonamiento", "Lám. 03 · esquema de proceso", svgPipeline(1), "Fuente: " + e.cifra.fuente);
+  if (e.diagrama === "estados")   return laminaHTML("Guardado, publicado, en producción", "Lám. 04 · estados", svgEstados(), "Fuente: " + e.cifra.fuente);
+  return "";
+}
+
+/* ── Piezas compartidas ───────────────────────────────────────────── */
+function checklistHTML(items) {
+  const etiqueta = { hecho: "hecho", pendiente: "pendiente", bloqueado: "bloqueado" };
+  return '<ul class="lista">' + items.map((it, i) =>
+    '<li data-estado="' + it.estado + '" data-reveal-x style="transition-delay:' + (i * 70) + 'ms">' +
+      '<span>' + esc(it.texto) + '</span>' +
+      '<i class="luz luz--' + it.estado + '" role="img" aria-label="' + etiqueta[it.estado] + '" title="' + etiqueta[it.estado] + '"></i>' +
+    '</li>').join("") + '</ul>';
+}
+
+function rotuloHTML(e) {
+  return '<dl class="rotulo" style="margin:0;">' +
+    '<div><dt>Registro</dt><dd>Semana ' + e.semana + '</dd></div>' +
+    '<div><dt>Fecha</dt><dd>' + e.fecha.split("-").reverse().join(".") + '</dd></div>' +
+    '<div><dt>Área</dt><dd>' + AREAS[e.area] + '</dd></div>' +
+    '<div><dt>Revisión</dt><dd>' + e.revision + '</dd></div>' +
+  '</dl>';
+}
+
+/* Con denominador propio va barra; si valor y denominador coinciden la barra
+   siempre daría 100 % y no diría nada, así que se muestra la cifra sola. */
+function cifraHTML(c) {
+  const parcial = c.denominador > c.valor;
+  const cuerpo = parcial
+    ? '<div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:baseline; gap:12px 32px;">' +
+        '<span class="mono mono-c">' + esc(c.que_mide) + '</span>' +
+        '<span class="mono tabnum">' + nf(c.valor) + ' de ' + nf(c.denominador) + ' · ' + pctTexto(c) + '</span>' +
+      '</div>' +
+      '<div class="barra" style="margin-top:14px;" data-barra="' + pct(c).toFixed(2) + '"><i></i><u></u></div>'
+    : '<div style="display:flex; flex-wrap:wrap; align-items:baseline; gap:14px 20px;">' +
+        '<span class="display d-m tabnum">' + nf(c.valor) + '</span>' +
+        '<span class="mono mono-c" style="letter-spacing:.24em;">' + esc(c.unidad) + '</span>' +
+      '</div>' +
+      '<p class="prosa-s" style="margin:12px 0 0;">' + esc(c.que_mide) + '.</p>';
+
+  return '<div data-reveal>' + cuerpo +
+    '<p class="mono" style="margin:14px 0 0; letter-spacing:.2em;">Fuente: ' + esc(c.fuente) + '</p>' +
+  '</div>';
+}
+
+/* ── Vistas ───────────────────────────────────────────────────────── */
+function vistaHome() {
+  const e = ENTRADAS[0];
+  return '' +
+  '<section class="contenedor" style="padding-top:64px; padding-bottom:96px;">' +
+    '<article class="ventana" data-reveal>' +
+      '<div class="ventana-barra">' +
+        '<span class="semaforo"><i></i><i></i><i></i></span>' +
+        '<span class="mono-11 ventana-nombre">el-cuaderno-de-obra / semana-' + e.semana + '.md</span>' +
+        '<span class="mono">solo lectura</span>' +
+      '</div>' +
+      '<div class="ventana-cuerpo">' +
+        '<p class="mono" style="margin:0 0 22px;">Última entrada · ' + fechaRelativa(e.fecha) + '</p>' +
+        '<h1 class="display d-l" data-reveal>' + esc(e.titulo) + '</h1>' +
+        '<div class="cota" style="margin:28px 0 24px;"><span class="mono">' + fechaLarga(e.fecha) + '</span><span class="cota-linea"></span><span class="mono">' + AREAS[e.area] + '</span></div>' +
+        '<p class="prosa" data-reveal>' + e.cuerpo[0] + '</p>' +
+        '<div style="margin-top:40px;" data-reveal>' + diagramaDe(e) + '</div>' +
+        '<div style="margin-top:40px;">' + checklistHTML(e.checklist) + '</div>' +
+        '<div style="margin-top:38px; display:flex; flex-wrap:wrap; gap:14px; align-items:center;">' +
+          '<a class="boton" href="#/entrada/' + e.slug + '">Leer la entrada completa</a>' +
+          '<a class="boton boton--fantasma" href="#/entradas">Ver todas las entradas</a>' +
+        '</div>' +
+      '</div>' +
+    '</article>' +
+  '</section>' +
+
+  '<section class="contenedor seccion--corta">' +
+    '<div class="regla"></div>' +
+    '<div style="display:grid; grid-template-columns:repeat(12,1fr); padding:76px 0;">' +
+      '<h2 class="display d-xl" data-reveal style="grid-column:4 / span 9;">Construyendo a conciencia,<br>en <span class="tenue">público</span>.</h2>' +
+    '</div>' +
+    '<div class="regla"></div>' +
+  '</section>' +
+
+  '<section class="contenedor seccion" id="ventana">' +
+    '<h2 class="display d-xxl" data-reveal>VENTANA</h2>' +
+    '<div class="g-2" style="margin-top:44px;">' +
+      '<p class="prosa" data-reveal style="font-size:21px;">Se carga un proyecto inmobiliario y vuelve un diagnóstico estructurado de pre-factibilidad: qué riesgos tiene, qué datos faltan, y de dónde sale cada número. Doce agentes miran cada uno una parte; el veredicto sale del conjunto, con el razonamiento a la vista.</p>' +
+      '<div data-reveal>' +
+        '<p class="mono" style="margin:0;">Cobertura — 6 países</p>' +
+        '<div class="mono-11" style="display:grid; grid-template-columns:1fr 1fr; gap:10px 24px; margin-top:16px;">' +
+          '<span>Argentina</span><span>Colombia</span><span>Ecuador</span><span>Perú</span><span>México</span><span>Paraguay</span>' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="g-4" style="margin-top:56px;">' +
+      '<div data-reveal><p class="mono" style="margin:0;">Timing Score</p><p class="display d-m tabnum" style="margin:14px 0 10px;">0–100</p><p class="prosa-s" style="font-size:12.5px;">El puntaje de cada análisis, con el razonamiento de cada factor.</p></div>' +
+      '<div data-reveal style="transition-delay:70ms"><p class="mono" style="margin:0;">Veredicto</p><p style="margin:14px 0 10px; display:flex; gap:4px; flex-wrap:wrap;"><span class="chip chip--solido">Enter</span><span class="chip">Hold</span><span class="chip">Exit</span></p><p class="prosa-s" style="font-size:12.5px;">Se lee por relleno o contorno, sin depender del color.</p></div>' +
+      '<div data-reveal style="transition-delay:140ms"><p class="mono" style="margin:0;">Agentes</p><p class="display d-m tabnum" style="margin:14px 0 10px;">12</p><p class="prosa-s" style="font-size:12.5px;">En Argentina. En Ecuador son 11: no hay factor cambiario.</p></div>' +
+      '<div data-reveal style="transition-delay:210ms"><p class="mono" style="margin:0;">Usuarios</p><p class="display d-m tabnum" style="margin:14px 0 10px;">0</p><p class="prosa-s" style="font-size:12.5px;">Sin beta abierta. Cuando abra, se avisa acá primero.</p></div>' +
+    '</div>' +
+  '</section>' +
+
+  '<section class="contenedor seccion--corta">' +
+    '<div class="regla" style="margin-bottom:64px;"></div>' +
+    '<p class="mono" style="margin:0 0 26px;">Lo que se mide, y contra qué</p>' +
+    '<div style="max-width:760px;">' + cifraHTML(ENTRADAS[0].cifra) + '</div>' +
+    '<p class="prosa-s" style="margin-top:22px;">Esta barra avanza sólo con trabajo verificado, y nunca sin decir sobre cuánto. Un porcentaje sin su denominador escrito es una opinión, no una medición.</p>' +
+  '</section>' +
+
+  '<section class="contenedor seccion--corta" id="seguir">' +
+    '<div class="regla" style="margin-bottom:56px;"></div>' +
+    '<div class="g-2" style="align-items:end;">' +
+      '<h2 class="display d-xl" data-reveal>Seguir el <span class="tenue">progreso</span></h2>' +
+      '<div class="pila" style="gap:22px; align-items:flex-start;" data-reveal>' +
+        '<p class="prosa-s">Una entrada por semana con lo hecho y lo pendiente. No hay beta todavía; cuando abra, se avisa acá primero.</p>' +
+        '<a class="boton" href="#/entradas">Ver todas las entradas</a>' +
+      '</div>' +
+    '</div>' +
+  '</section>';
+}
+
+/* ===================================================================
+   EL CAJÓN DE CARPETAS — el índice.
+   Adaptado de recent.design/i/ovkkk8y-scroll-driven-reviews-drawer.
+   El scroll recorre el cajón; la carpeta activa saca su ficha.
+   Sin librerías: la CSP del artifact bloquea CDNs, así que Lenis y
+   Motion no cargan. En el sitio real van como dependencias normales.
+   Los separadores de área reemplazan a los filtros: hacen el mismo
+   trabajo sin un control más que aprender.
+   =================================================================== */
+function vistaIndice() {
+  const desde = ENTRADAS[ENTRADAS.length - 1];
+  return '' +
+  '<section class="contenedor" style="padding-top:52px; padding-bottom:26px;">' +
+    '<h1 class="display d-xxl" data-reveal>Entradas</h1>' +
+    '<div class="cota" style="margin-top:30px;">' +
+      '<span class="mono">Registro público</span><span class="cota-linea"></span>' +
+      '<span class="mono tabnum">' + ENTRADAS.length + ' entradas · desde ' + fechaLarga(desde.fecha) + '</span>' +
+    '</div>' +
+  '</section>' +
+
+  '<section class="contenedor cajon-pista" id="pista" style="height:' + (ENTRADAS.length * 58 + 70) + 'vh;">' +
+    '<div class="cajon">' +
+      '<p class="mono" style="margin:0 0 18px;">Desplazá para abrir · click para leer</p>' +
+      '<div class="cajon-marco" id="marco" style="padding-top:26px;">' +
+        fichaHTML() +
+        carpetasHTML() +
+      '</div>' +
+      '<div class="cajon-base">' +
+        '<span class="mono">Cuaderno / ' + String(ENTRADAS.length).padStart(2, "0") + ' entradas</span>' +
+        '<span class="mono" id="cajon-pos">01 / ' + String(ENTRADAS.length).padStart(2, "0") + '</span>' +
+      '</div>' +
+    '</div>' +
+  '</section>' +
+
+  '<section class="contenedor seccion--corta">' +
+    '<div class="regla" style="margin-bottom:40px;"></div>' +
+    '<p class="mono" style="margin:0 0 10px;">Activo de marca — imagen de vista previa (1200 × 630)</p>' +
+    '<p class="prosa-s" style="margin:0 0 24px;">Es lo que se ve al compartir el link en X, LinkedIn o WhatsApp, antes de que nadie entre. Hoy no existe ninguna.</p>' +
+    '<div style="max-width:760px;">' + ogHTML() + '</div>' +
+  '</section>';
+}
+
+/* ORDEN DEL CAJÓN — por área, no por fecha.
+   Un cajón de archivo se ordena por categoría; si se ordena por fecha, los
+   separadores dejan de agrupar y aparece uno por carpeta, que es ruido.
+   Dentro de cada área, la más reciente arriba. La portada sigue mostrando
+   la última entrada en orden cronológico: son dos vistas distintas a
+   propósito. Devuelve los índices originales de ENTRADAS. */
+function ordenCajon() {
+  const orden = [];
+  Object.keys(AREAS).forEach(area => {
+    ENTRADAS.forEach((e, i) => { if (e.area === area) orden.push(i); });
+  });
+  return orden;
+}
+
+/* Ancho creciente hacia abajo (perspectiva) y pestaña desplazada de forma
+   determinista, para que ninguna tape a la anterior. */
+function carpetasHTML() {
+  const orden = ordenCajon();
+  let html = "", areaPrevia = null;
+
+  orden.forEach((idx, pos) => {
+    const e = ENTRADAS[idx];
+    if (e.area !== areaPrevia) {
+      areaPrevia = e.area;
+      const cuantas = orden.filter(k => ENTRADAS[k].area === e.area).length;
+      html += '<div class="divisor"><span class="mono" style="left:' + (3 + (pos % 2) * 8) + '%;">' +
+                esc(AREAS[e.area]) + ' · ' + cuantas +
+              '</span></div>';
+    }
+    const sangria = (orden.length - 1 - pos) * 15;
+    const posPestana = 13 + ((pos * 27) % 44);
+    html +=
+      '<button type="button" class="carpeta" data-carpeta="' + pos + '" data-entrada="' + idx + '" aria-current="false" ' +
+              'style="width:calc(100% - ' + sangria + 'px); margin:0 auto;" ' +
+              'aria-label="' + esc(e.titulo) + '">' +
+        '<span class="carpeta-pestana" style="left:' + posPestana + '%;">' +
+          '<span class="mono mono-c" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">' + esc(etiquetaCarpeta(e)) + '</span>' +
+        '</span>' +
+        '<span class="carpeta-cuerpo"></span>' +
+      '</button>';
+  });
+  return html;
+}
+
+/* La etiqueta de la pestaña: corta, para que quepa. */
+function etiquetaCarpeta(e) {
+  return "S" + e.semana + " · " + e.titulo.split(/[,:]/)[0].slice(0, 34);
+}
+
+function fichaHTML() {
+  return '<article class="ficha" id="ficha" aria-live="polite">' +
+    '<div style="display:flex; flex-wrap:wrap; justify-content:space-between; gap:8px 24px;">' +
+      '<span class="mono tabnum" id="ficha-rec"></span>' +
+      '<span class="mono" id="ficha-area"></span>' +
+    '</div>' +
+    '<p class="ficha-cita" id="ficha-cita"></p>' +
+    '<div class="ficha-pie">' +
+      '<span class="mono mono-c" id="ficha-firma"></span>' +
+      '<span class="mono" id="ficha-leer">Leer la entrada →</span>' +
+    '</div>' +
+  '</article>';
+}
+
+/* ── Movimiento del cajón ─────────────────────────────────────────── */
+let cajonActivo = -1;
+
+/* `pos` es la posición en el cajón (orden por área), no el índice de ENTRADAS. */
+function pintarFicha(posicion) {
+  if (posicion === cajonActivo) return;
+  cajonActivo = posicion;
+  const ficha = document.getElementById("ficha");
+  const pos = document.getElementById("cajon-pos");
+  if (!ficha) return;
+
+  document.querySelectorAll("[data-carpeta]").forEach(b =>
+    b.setAttribute("aria-current", String(Number(b.getAttribute("data-carpeta")) === posicion)));
+
+  if (posicion < 0) { ficha.classList.remove("abierta"); return; }
+
+  const e = ENTRADAS[ordenCajon()[posicion]];
+  const n = String(posicion + 1).padStart(2, "0"), t = String(ENTRADAS.length).padStart(2, "0");
+  document.getElementById("ficha-rec").textContent = "REC " + n + " / " + t;
+  document.getElementById("ficha-area").textContent = AREAS[e.area] + " · semana " + e.semana;
+  document.getElementById("ficha-cita").textContent = "“" + e.cita + "”";
+  document.getElementById("ficha-firma").textContent = e.firma + " · " + fechaLarga(e.fecha);
+  ficha.classList.add("abierta");
+  if (pos) pos.textContent = n + " / " + t;
+}
+
+function conectarCajon() {
+  const pista = document.getElementById("pista");
+  if (!pista) { cajonActivo = -1; return null; }
+
+  /* Puntero Y teclado abren la ficha en los dos modos. Con movimiento
+     reducido apuntar no es "movimiento": es la única forma de recorrer el
+     cajón sin el scroll, y dejarla fuera lo volvía inservible con el mouse. */
+  document.querySelectorAll("[data-carpeta]").forEach(b => {
+    const posicion = Number(b.getAttribute("data-carpeta"));
+    const idx = Number(b.getAttribute("data-entrada"));
+    b.addEventListener("click", () => { location.hash = "#/entrada/" + ENTRADAS[idx].slug; });
+    b.addEventListener("focus", () => pintarFicha(posicion));
+    b.addEventListener("mouseenter", () => pintarFicha(posicion));
+  });
+
+  /* Sin scroll que lo maneje, el recorrido reservado sería scroll vacío. */
+  if (quieto) { pista.style.height = "auto"; pintarFicha(0); return null; }
+
+  return () => {
+    const caja = pista.getBoundingClientRect();
+    pintarFicha(posicionPorProgreso(-caja.top, caja.height - window.innerHeight, ENTRADAS.length));
+  };
+}
+
+/* Función pura: recorrido de scroll → qué carpeta está abierta.
+   Separada del DOM a propósito, para poder testearla sin navegador.
+   Devuelve -1 mientras el cajón todavía está cerrado. */
+function posicionPorProgreso(avance, recorrido, cuantas) {
+  if (!(recorrido > 0)) return 0;              /* no hay recorrido: abierta la primera */
+  const p = Math.min(1, Math.max(0, avance / recorrido));
+  const CERRADO = 0.06;                        /* el cajón se ve entero antes de abrirse */
+  if (p < CERRADO) return -1;
+  const q = (p - CERRADO) / (1 - CERRADO);
+  return Math.min(cuantas - 1, Math.floor(q * cuantas));
+}
+
+function vistaEntrada(slug) {
+  const i = ENTRADAS.findIndex(e => e.slug === slug);
+  if (i < 0) return '<section class="contenedor seccion"><h1 class="display d-l">Esa entrada no existe</h1><p class="prosa" style="margin-top:20px;">Puede que haya cambiado de dirección. <a href="#/entradas">Ver todas las entradas</a>.</p></section>';
+  const e = ENTRADAS[i];
+  const previa = ENTRADAS[i + 1], siguiente = ENTRADAS[i - 1];
+
+  return '' +
+  '<article>' +
+    '<header class="contenedor" style="padding-top:56px; padding-bottom:48px;">' +
+      '<p class="mono" style="margin:0 0 24px;">' + fechaLarga(e.fecha) + ' · ' + AREAS[e.area] + ' · por ' + esc(e.firma) + '</p>' +
+      '<h1 class="display d-xl" data-reveal>' + esc(e.titulo) + '</h1>' +
+      '<p class="prosa" data-reveal style="margin-top:28px; font-size:21px; color:var(--tinta-3);">' + esc(e.resumen) + '</p>' +
+      '<div style="margin-top:40px;">' + rotuloHTML(e) + '</div>' +
+    '</header>' +
+
+    '<div class="contenedor" style="padding-bottom:24px;">' + diagramaDe(e) + '</div>' +
+
+    '<div class="contenedor" style="padding-top:48px; padding-bottom:48px;">' +
+      '<div class="pila" style="gap:26px;">' +
+        e.cuerpo.map((p, k) => '<p class="prosa" data-reveal style="transition-delay:' + (k * 60) + 'ms">' + p + '</p>').join("") +
+      '</div>' +
+    '</div>' +
+
+    '<div class="contenedor" style="padding-bottom:48px;">' +
+      '<div class="cota" style="margin-bottom:26px;"><span class="mono">Lo hecho y lo pendiente</span><span class="cota-linea"></span></div>' +
+      checklistHTML(e.checklist) +
+    '</div>' +
+
+    '<div class="contenedor" style="padding-bottom:56px;">' +
+      '<div class="cota" style="margin-bottom:26px;"><span class="mono">La cifra de esta entrada</span><span class="cota-linea"></span></div>' +
+      '<div style="max-width:760px;">' + cifraHTML(e.cifra) + '</div>' +
+    '</div>' +
+
+    /* El cierre: una pregunta concreta que sólo alguien del rubro puede
+       contestar. Es el CTA — no hay "suscribite" en ningún lado. */
+    '<div class="contenedor" style="padding-bottom:72px;">' +
+      '<div class="ficha" style="position:static; opacity:1; transform:none; pointer-events:auto; max-width:820px;">' +
+        '<span class="mono">Te leo</span>' +
+        '<p class="prosa" style="margin:0; font-size:21px; color:var(--tinta);">' + esc(e.cta) + '</p>' +
+        '<div class="ficha-pie">' +
+          '<span class="mono mono-c">' + esc(e.firma) + ' · construyendo a conciencia, en público</span>' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+
+    '<nav class="contenedor" style="padding-bottom:96px;">' +
+      '<div class="regla" style="margin-bottom:26px;"></div>' +
+      '<div style="display:flex; flex-wrap:wrap; gap:24px 40px; justify-content:space-between;">' +
+        (previa ? '<a href="#/entrada/' + previa.slug + '" class="pila" style="gap:8px; max-width:44ch;"><span class="mono">Entrada anterior</span><span class="display d-m">' + esc(previa.titulo) + '</span></a>' : '<span></span>') +
+        (siguiente ? '<a href="#/entrada/' + siguiente.slug + '" class="pila" style="gap:8px; max-width:44ch; text-align:right; align-items:flex-end;"><span class="mono">Entrada siguiente</span><span class="display d-m">' + esc(siguiente.titulo) + '</span></a>' : '<span></span>') +
+      '</div>' +
+    '</nav>' +
+  '</article>';
+}
+
+function ogHTML() {
+  const e = ENTRADAS[0];
+  return '<div class="og">' +
+    '<div style="display:flex; justify-content:space-between; align-items:flex-start; gap:20px;">' +
+      '<span class="mono" style="color:var(--tinta-3);">El Cuaderno de Obra</span>' +
+      '<span class="mono">Semana ' + e.semana + ' · ' + e.fecha.split("-").reverse().join(".") + '</span>' +
+    '</div>' +
+    '<div>' +
+      '<p class="display" style="font-size:clamp(20px,3.6vw,44px); line-height:1.05; margin:0;">' + esc(e.titulo) + '</p>' +
+      '<p class="mono" style="margin:16px 0 0; color:var(--tinta-3); letter-spacing:.24em;">' + nf(e.cifra.valor) + ' de ' + nf(e.cifra.denominador) + ' ' + esc(e.cifra.unidad) + '</p>' +
+    '</div>' +
+    '<div style="display:flex; justify-content:space-between; align-items:flex-end; gap:20px;">' +
+      '<span class="mono" style="color:var(--tinta-4);">VENTANA · construyendo a conciencia, en público</span>' +
+      '<span class="chip">Sin beta abierta</span>' +
+    '</div>' +
+  '</div>';
+}
+
+/* ── Movimiento ───────────────────────────────────────────────────── */
+const quieto = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+let observador = null;
+
+function activarMovimiento() {
+  if (observador) observador.disconnect();
+
+  const objetivos = document.querySelectorAll("[data-reveal], [data-reveal-x], [data-lamina], [data-barra]");
+  if (quieto || !("IntersectionObserver" in window)) {
+    objetivos.forEach(el => {
+      el.classList.add("visto");
+      if (el.hasAttribute("data-barra")) pintarBarra(el);
+    });
+    return;
+  }
+  observador = new IntersectionObserver(entradas => {
+    entradas.forEach(en => {
+      if (!en.isIntersecting) return;
+      en.target.classList.add("visto");
+      if (en.target.hasAttribute("data-barra")) pintarBarra(en.target);
+      observador.unobserve(en.target);
+    });
+  }, { rootMargin: "0px 0px -10% 0px", threshold: 0.08 });
+  objetivos.forEach(el => observador.observe(el));
+}
+
+function pintarBarra(el) {
+  const v = parseFloat(el.getAttribute("data-barra")) || 0;
+  const ancho = Math.max(v, 0.35); /* mínimo visible: 1,5 % no puede desaparecer */
+  requestAnimationFrame(() => {
+    el.querySelector("i").style.width = ancho + "%";
+    el.querySelector("u").style.left = ancho + "%";
+  });
+}
+
+/* Parallax del fondo + pill al scrollear + apertura del cajón.
+   Un solo listener de scroll y un solo frame por cuadro: tres listeners
+   compitiendo por el mismo evento es la forma barata de que se trabe. */
+let alScrollearCajon = null;
+
+(function () {
+  const grilla = document.getElementById("grilla");
+  const brillo = document.getElementById("brillo");
+  const pill = document.getElementById("pill");
+  let pedido = 0;
+  const alScrollear = () => {
+    if (pedido) return;
+    pedido = requestAnimationFrame(() => {
+      pedido = 0;
+      const y = window.scrollY || 0;
+      if (!quieto) {
+        const pos = "0px " + (-y * 0.18).toFixed(1) + "px";
+        grilla.style.backgroundPosition = pos;
+        brillo.style.backgroundPosition = pos;
+      }
+      pill.classList.toggle("visible", y > window.innerHeight * 0.55);
+      if (alScrollearCajon) alScrollearCajon();
+    });
+  };
+  window.addEventListener("scroll", alScrollear, { passive: true });
+  window.addEventListener("resize", alScrollear, { passive: true });
+  alScrollear();
+})();
+
+/* Grilla que se ilumina donde está el puntero */
+(function () {
+  const brillo = document.getElementById("brillo");
+  const finoYQuieto = window.matchMedia("(hover: hover)").matches && !quieto;
+  if (!finoYQuieto) return;
+  let gx = innerWidth / 2, gy = innerHeight / 2, tx = gx, ty = gy, raf = 0;
+  const pintar = () => {
+    const m = "radial-gradient(circle 250px at " + gx.toFixed(1) + "px " + gy.toFixed(1) + "px, #000 0%, rgba(0,0,0,.38) 46%, transparent 72%)";
+    brillo.style.maskImage = m; brillo.style.webkitMaskImage = m;
+  };
+  const tic = () => {
+    gx += (tx - gx) * 0.16; gy += (ty - gy) * 0.16; pintar();
+    raf = (Math.abs(tx - gx) > 0.4 || Math.abs(ty - gy) > 0.4) ? requestAnimationFrame(tic) : 0;
+  };
+  window.addEventListener("pointermove", ev => {
+    tx = ev.clientX; ty = ev.clientY;
+    if (brillo.style.opacity !== "1") brillo.style.opacity = "1";
+    if (!raf) raf = requestAnimationFrame(tic);
+  }, { passive: true });
+  pintar();
+})();
+
+/* ── Ruteo por hash: cada entrada tiene su propia dirección ───────── */
+const vista = document.getElementById("vista");
+const pillTitulo = document.getElementById("pill-titulo");
+
+function pintar() {
+  const ruta = location.hash.replace(/^#/, "") || "/";
+  let html, titulo;
+
+  if (ruta.startsWith("/entrada/")) {
+    const slug = ruta.slice("/entrada/".length);
+    const e = ENTRADAS.find(x => x.slug === slug);
+    html = vistaEntrada(slug);
+    titulo = e ? "Semana " + e.semana : "Entrada";
+  } else if (ruta.startsWith("/entradas")) {
+    html = vistaIndice();
+    titulo = "Todas las entradas";
+  } else {
+    html = vistaHome();
+    titulo = "Cuaderno de obra · sem " + ENTRADAS[0].semana;
+  }
+
+  vista.innerHTML = html;
+  pillTitulo.textContent = titulo;
+  document.querySelectorAll(".pill nav a").forEach(a =>
+    a.setAttribute("aria-current", a.getAttribute("href") === "#" + (ruta === "/" ? "/" : ruta) ? "page" : "false"));
+
+  cajonActivo = -1;
+  alScrollearCajon = conectarCajon();
+  if (alScrollearCajon) alScrollearCajon();
+
+  activarMovimiento();
+  if (ruta === "/ventana") document.getElementById("ventana").scrollIntoView({ behavior: quieto ? "auto" : "smooth" });
+  else window.scrollTo({ top: 0, behavior: "auto" });
+}
+
+window.addEventListener("hashchange", pintar);
+pintar();
+</script>
+
+</body>
+</html>

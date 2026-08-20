@@ -1,0 +1,12 @@
+{
+  "name": "cuaderno-de-obra",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Boletin publico donde VENTANA registra su construccion, semana a semana.",
+  "scripts": {
+    "validar": "node validar.js",
+    "construir": "node construir.js",
+    "probar": "node pruebas.js",
+    "publicar": "node validar.js && node construir.js && node pruebas.js"
+  }
+}
