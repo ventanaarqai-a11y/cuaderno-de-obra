@@ -3,8 +3,8 @@ fecha: 2026-08-18
 semana: 34
 revision: "04"
 area: infra
-titulo: Seis días creyendo que avanzaba
-resumen: El trabajo estaba hecho y guardado. Desde cualquier otra máquina, no existía.
+titulo: Un plano terminado no es un plano enviado
+resumen: Seis días de trabajo hecho y guardado que, desde cualquier otro lado, no existía. El problema no era el trabajo: era que la diferencia no se veía.
 firma: Marcelo Acurio
 cita: El arreglo no fue publicar. Fue que la diferencia entre los tres estados se vea en cinco segundos en vez de en seis días.
 diagrama: estados
@@ -21,12 +21,13 @@ checklist:
   - bloqueado: Pasar el programa de datos a producción
 cta: ¿Cómo controlás vos que lo que hiciste esta semana está donde tiene que estar, y no sólo en tu disco?
 ---
-Durante seis días estuve avanzando de verdad. Y durante seis días, desde cualquier otra máquina, ese avance no existía.
 
-Hay tres estados que es fácil confundir, y confundirlos sale caro. <em>Guardado</em>: está en el historial de esta computadora. <em>Publicado</em>: está en el servidor, y cualquiera puede verlo. <em>En producción</em>: es lo que corre para el usuario final. Tres fases completas de trabajo estuvieron en el primero y en ninguno de los otros dos.
+Un plano terminado, un plano enviado y un plano del que ya se está construyendo son tres cosas distintas. En una obra nadie las confunde. Yo las confundí seis días seguidos.
+
+En software pasa igual y se nota menos. <em>Guardado</em>: está en el historial de mi computadora. <em>Publicado</em>: está en el servidor, y cualquiera puede verlo. <em>En producción</em>: es lo que corre para el usuario final. Tres fases completas de trabajo estuvieron en el primero y en ninguno de los otros dos.
 
 No era un problema de comunicación. Cuando alguien preguntaba cómo venía, no había nada que mostrar: literalmente no había qué mirar. Veinticinco commits vivían en un disco.
 
-El arreglo no fue publicar —eso tardó un minuto—. Fue darme cuenta de que el problema real era que la diferencia entre los tres estados era invisible hasta que alguien la buscaba. Ahora hay un comando de control que se corre al abrir y al cerrar cada sesión, y la hace visible en cinco segundos.
+El arreglo no fue publicar —eso tardó un minuto—. Fue darme cuenta de que el problema real era que la diferencia entre los tres estados era invisible hasta que alguien la buscaba. Si trabajás con una carpeta compartida, un tablero o un repositorio, la pregunta que sirve no es «¿está hecho?» sino **«¿desde dónde más se puede ver?»**. Ahora eso se responde en cinco segundos con un solo comando, al abrir y al cerrar la jornada.
 
 Y para no cometer el error en la otra dirección: <strong>nada de este programa está en producción todavía</strong>. Está publicado, está a la vista, y sigue sin ser lo que corre para nadie.

@@ -443,8 +443,8 @@ const ENTRADAS = [
     "revision": "04",
     "area": "infra",
     "firma": "Marcelo Acurio",
-    "titulo": "Seis días creyendo que avanzaba",
-    "resumen": "El trabajo estaba hecho y guardado. Desde cualquier otra máquina, no existía.",
+    "titulo": "Un plano terminado no es un plano enviado",
+    "resumen": "Seis días de trabajo hecho y guardado que, desde cualquier otro lado, no existía. El problema no era el trabajo: era que la diferencia no se veía.",
     "cita": "El arreglo no fue publicar. Fue que la diferencia entre los tres estados se vea en cinco segundos en vez de en seis días.",
     "diagrama": "estados",
     "cifra": {
@@ -455,10 +455,10 @@ const ENTRADAS = [
       "fuente": "docs/handoffs/CONTINUIDAD_DATOS.md §1"
     },
     "cuerpo": [
-      "Durante seis días estuve avanzando de verdad. Y durante seis días, desde cualquier otra máquina, ese avance no existía.",
-      "Hay tres estados que es fácil confundir, y confundirlos sale caro. <em>Guardado</em>: está en el historial de esta computadora. <em>Publicado</em>: está en el servidor, y cualquiera puede verlo. <em>En producción</em>: es lo que corre para el usuario final. Tres fases completas de trabajo estuvieron en el primero y en ninguno de los otros dos.",
+      "Un plano terminado, un plano enviado y un plano del que ya se está construyendo son tres cosas distintas. En una obra nadie las confunde. Yo las confundí seis días seguidos.",
+      "En software pasa igual y se nota menos. <em>Guardado</em>: está en el historial de mi computadora. <em>Publicado</em>: está en el servidor, y cualquiera puede verlo. <em>En producción</em>: es lo que corre para el usuario final. Tres fases completas de trabajo estuvieron en el primero y en ninguno de los otros dos.",
       "No era un problema de comunicación. Cuando alguien preguntaba cómo venía, no había nada que mostrar: literalmente no había qué mirar. Veinticinco commits vivían en un disco.",
-      "El arreglo no fue publicar —eso tardó un minuto—. Fue darme cuenta de que el problema real era que la diferencia entre los tres estados era invisible hasta que alguien la buscaba. Ahora hay un comando de control que se corre al abrir y al cerrar cada sesión, y la hace visible en cinco segundos.",
+      "El arreglo no fue publicar —eso tardó un minuto—. Fue darme cuenta de que el problema real era que la diferencia entre los tres estados era invisible hasta que alguien la buscaba. Si trabajás con una carpeta compartida, un tablero o un repositorio, la pregunta que sirve no es «¿está hecho?» sino **«¿desde dónde más se puede ver?»**. Ahora eso se responde en cinco segundos con un solo comando, al abrir y al cerrar la jornada.",
       "Y para no cometer el error en la otra dirección: <strong>nada de este programa está en producción todavía</strong>. Está publicado, está a la vista, y sigue sin ser lo que corre para nadie."
     ],
     "cta": "¿Cómo controlás vos que lo que hiciste esta semana está donde tiene que estar, y no sólo en tu disco?",
@@ -578,8 +578,8 @@ const ENTRADAS = [
     "revision": "01",
     "area": "infra",
     "firma": "Marcelo Acurio",
-    "titulo": "El error estaba escrito, con su nombre, en un archivo que nadie abrió",
-    "resumen": "El documento de traspaso culpaba a la infraestructura. Dos minutos de verificación mostraron que era falso.",
+    "titulo": "El informe decía una cosa y el registro decía otra",
+    "resumen": "El documento de traspaso daba una causa. Dos minutos de mirar el registro crudo mostraron que era falsa, y que el error estaba escrito ahí hacía cuatro días.",
     "cita": "No faltaba infraestructura. Faltaba abrir el registro: llevaba cuatro corridas en rojo con el error exacto adentro.",
     "diagrama": "pipeline",
     "cifra": {
@@ -590,11 +590,11 @@ const ENTRADAS = [
       "fuente": "docs/ESTADO_Y_PRIORIDADES.md §Sesión 2026-08-10"
     },
     "cuerpo": [
-      "El documento de traspaso decía que el problema no se podía reproducir fuera de producción. El problema estaba escrito, con su nombre completo, en un archivo que nadie había abierto.",
-      "La causa raíz declarada era que las migraciones de base de datos sólo se ejercían en el servidor real. Dos minutos de verificación mostraron que eso era falso: el sistema de integración ya levantaba una base igual a la de producción y las corría en cada envío. No faltaba infraestructura. Faltaba mirar el resultado.",
-      "La causa real: dos ramas de trabajo paralelas creaban la misma tabla. El chequeo estándar —que exista una sola cabeza en el grafo de migraciones— no cubre ese caso, así que pasaba en verde mientras la cadena reventaba por debajo.",
-      "Y arreglar el primero destapó dos más: un detector de credenciales dando falsos positivos, y un archivo de configuración generado en Windows que en Linux es rojo permanente. Cuando se destraba algo que lleva tiempo roto, conviene presupuestar que no es un error sino una pila.",
-      "Se reprodujo el fallo antes de tocar una línea, y después se volvió a romper a propósito para confirmar que los dos niveles de prueba se ponían en rojo por ese motivo y no por otro."
+      "Cualquiera que haya recibido una obra empezada conoce esto: el parte dice una cosa y el registro dice otra. Me pasó con mi propio proyecto, y me costó días.",
+      "El documento de traspaso daba por causa que el problema sólo se podía reproducir en producción. Dos minutos de verificación mostraron que era falso: el sistema de control automático ya lo estaba probando en cada envío. No faltaba infraestructura. Faltaba abrir el registro, que llevaba cuatro corridas en rojo con el error exacto adentro.",
+      "La causa real era otra y más silenciosa: dos líneas de trabajo paralelas creaban lo mismo dos veces. El chequeo estándar no cubre ese caso, así que pasaba en verde mientras la cadena reventaba por debajo.",
+      "Y arreglar el primero destapó dos más. Cuando se destraba algo que lleva tiempo roto, conviene presupuestar que no es <em>un</em> error sino una pila.",
+      "Lo que me llevé, y sirve fuera del software: **antes de aceptar la causa que declara un documento, abrí el registro crudo vos mismo.** Cuesta dos minutos, y es la diferencia entre arreglar el problema y arreglar lo que alguien creyó que era el problema."
     ],
     "cta": "Pregunta honesta: ¿cuánto hace que no abrís el registro de tu propia integración continua?",
     "checklist": [

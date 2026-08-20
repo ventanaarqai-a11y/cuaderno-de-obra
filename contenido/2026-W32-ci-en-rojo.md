@@ -3,8 +3,8 @@ fecha: 2026-08-10
 semana: 32
 revision: "01"
 area: infra
-titulo: El error estaba escrito, con su nombre, en un archivo que nadie abrió
-resumen: El documento de traspaso culpaba a la infraestructura. Dos minutos de verificación mostraron que era falso.
+titulo: El informe decía una cosa y el registro decía otra
+resumen: El documento de traspaso daba una causa. Dos minutos de mirar el registro crudo mostraron que era falsa, y que el error estaba escrito ahí hacía cuatro días.
 firma: Marcelo Acurio
 cita: "No faltaba infraestructura. Faltaba abrir el registro: llevaba cuatro corridas en rojo con el error exacto adentro."
 diagrama: pipeline
@@ -21,12 +21,13 @@ checklist:
   - hecho: Producción sirviendo la versión nueva
 cta: "Pregunta honesta: ¿cuánto hace que no abrís el registro de tu propia integración continua?"
 ---
-El documento de traspaso decía que el problema no se podía reproducir fuera de producción. El problema estaba escrito, con su nombre completo, en un archivo que nadie había abierto.
 
-La causa raíz declarada era que las migraciones de base de datos sólo se ejercían en el servidor real. Dos minutos de verificación mostraron que eso era falso: el sistema de integración ya levantaba una base igual a la de producción y las corría en cada envío. No faltaba infraestructura. Faltaba mirar el resultado.
+Cualquiera que haya recibido una obra empezada conoce esto: el parte dice una cosa y el registro dice otra. Me pasó con mi propio proyecto, y me costó días.
 
-La causa real: dos ramas de trabajo paralelas creaban la misma tabla. El chequeo estándar —que exista una sola cabeza en el grafo de migraciones— no cubre ese caso, así que pasaba en verde mientras la cadena reventaba por debajo.
+El documento de traspaso daba por causa que el problema sólo se podía reproducir en producción. Dos minutos de verificación mostraron que era falso: el sistema de control automático ya lo estaba probando en cada envío. No faltaba infraestructura. Faltaba abrir el registro, que llevaba cuatro corridas en rojo con el error exacto adentro.
 
-Y arreglar el primero destapó dos más: un detector de credenciales dando falsos positivos, y un archivo de configuración generado en Windows que en Linux es rojo permanente. Cuando se destraba algo que lleva tiempo roto, conviene presupuestar que no es un error sino una pila.
+La causa real era otra y más silenciosa: dos líneas de trabajo paralelas creaban lo mismo dos veces. El chequeo estándar no cubre ese caso, así que pasaba en verde mientras la cadena reventaba por debajo.
 
-Se reprodujo el fallo antes de tocar una línea, y después se volvió a romper a propósito para confirmar que los dos niveles de prueba se ponían en rojo por ese motivo y no por otro.
+Y arreglar el primero destapó dos más. Cuando se destraba algo que lleva tiempo roto, conviene presupuestar que no es <em>un</em> error sino una pila.
+
+Lo que me llevé, y sirve fuera del software: **antes de aceptar la causa que declara un documento, abrí el registro crudo vos mismo.** Cuesta dos minutos, y es la diferencia entre arreglar el problema y arreglar lo que alguien creyó que era el problema.
