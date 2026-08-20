@@ -1,0 +1,60 @@
+# ===================================================================
+# El Cuaderno de Obra — configuración de servidor (Hostinger / Apache)
+#
+# Hostinger despliega el REPO ENTERO a public_html. El sitio armado vive
+# en publico/, así que sin esto quedaría en tudominio.com/publico/ y
+# además se servirían los .md y los .js como archivos sueltos.
+#
+# Acá se resuelven las dos cosas: la raíz sirve publico/, y todo lo que
+# es código o contenido fuente queda fuera del alcance del navegador.
+# ===================================================================
+
+Options -Indexes
+DirectoryIndex index.html
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # No reescribir lo que ya está dentro de publico/ (evita el bucle).
+  RewriteCond %{REQUEST_URI} ^/publico/
+  RewriteRule ^ - [L]
+
+  # Todo lo demás se sirve desde publico/.
+  RewriteRule ^$ /publico/index.html [L]
+  RewriteCond %{DOCUMENT_ROOT}/publico%{REQUEST_URI} -f [OR]
+  RewriteCond %{DOCUMENT_ROOT}/publico%{REQUEST_URI} -d
+  RewriteRule ^(.*)$ /publico/$1 [L]
+
+  # El sitio es de una sola página con ruteo por hash: cualquier ruta
+  # desconocida devuelve el index en vez de un 404 del servidor.
+  RewriteRule ^ /publico/index.html [L]
+</IfModule>
+
+# El código y el contenido fuente NO se sirven. Están en GitHub, que es
+# donde se leen; servirlos acá sólo agrega superficie y ruido.
+#
+# Se bloquea por RUTA y por NOMBRE, nunca por extensión: bloquear "*.js"
+# rompería el día que publico/ tenga un script o un asset legítimo.
+RedirectMatch 404 ^/(contenido|reportes|plantilla|node_modules|\.git)(/.*)?$
+RedirectMatch 404 ^/(leer|construir|validar|pruebas)\.js$
+RedirectMatch 404 ^/(package(-lock)?\.json|README\.md|\.gitattributes|\.gitignore|\.htaccess)$
+
+# ── Cacheo ─────────────────────────────────────────────────────────
+# El HTML cambia cada semana: que no se sirva viejo.
+<IfModule mod_headers.c>
+  <FilesMatch "\.html$">
+    Header set Cache-Control "public, max-age=0, must-revalidate"
+  </FilesMatch>
+</IfModule>
+
+# ── Cabeceras de seguridad ─────────────────────────────────────────
+<IfModule mod_headers.c>
+  Header set X-Content-Type-Options "nosniff"
+  Header set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+</IfModule>
+
+# ── Compresión ─────────────────────────────────────────────────────
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css application/javascript image/svg+xml
+</IfModule>
