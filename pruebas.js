@@ -45,9 +45,50 @@ afirmar("toda entrada tiene gancho, cifra, firma y cta",
   entradas.length);
 afirmar("todo cta es una pregunta", entradas.filter(e => e.cta.includes("?")).length, entradas.length);
 
-/* El lector tiene que abortar, no adivinar. Se le da basura a propósito. */
+/* El lector tiene que abortar, no adivinar. Se le da basura a propósito.
+
+   La base es una FIXTURE escrita acá, no un archivo real de contenido/.
+   Antes se mutaba "el primer archivo que devolviera el sistema de archivos"
+   y ese orden no está garantizado: cambió al reescribir el historial, la
+   mutación dejó de reemplazar nada, y cuatro tests pasaron sin probar nada.
+   Una fixture propia deja todo lo demás válido y aísla un guard por vez. */
 const tmp = path.join(CONTENIDO, "_prueba_temporal.md");
-const buena = fs.readFileSync(path.join(CONTENIDO, fs.readdirSync(CONTENIDO).filter(f => f.endsWith(".md"))[0]), "utf8");
+const buena = [
+  "---",
+  "fecha: 2026-01-02",
+  "semana: 1",
+  'revision: "01"',
+  "area: datos",
+  "titulo: Entrada de prueba",
+  "resumen: Existe sólo para que las mutaciones tengan de dónde partir.",
+  "firma: Nadie",
+  "cita: Una cita cualquiera.",
+  "diagrama: cobertura",
+  "cifra:",
+  "  valor: 32",
+  "  denominador: 2117",
+  "  unidad: municipios",
+  "  que_mide: Algo medible",
+  "  fuente: contenido/_fixture",
+  "checklist:",
+  "  - hecho: Un ítem",
+  "cta: ¿Una pregunta?",
+  "---",
+  "",
+  "Un párrafo.",
+  "",
+  "Otro párrafo.",
+  "",
+  "Un tercero, para que el cuerpo tenga tres.",
+  ""
+].join("\n");
+
+/* Si la fixture no fuera válida, todo lo de abajo probaría otra cosa. */
+fs.writeFileSync(tmp, buena, "utf8");
+try {
+  const f = leerEntrada(tmp);
+  afirmar("la fixture base es válida (si no, no se prueba nada)", f.cuerpo.length, 3);
+} finally { fs.unlinkSync(tmp); }
 const conMutacion = (reemplazos, fn) => {
   let s = buena;
   reemplazos.forEach(([a, b]) => { s = s.replace(a, b); });

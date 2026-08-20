@@ -1,0 +1,8 @@
+# Fin de línea normalizado a LF en el repo, siempre.
+# Este proyecto ya perdió tiempo con un archivo generado en Windows que en
+# CI de Linux quedaba rojo de forma permanente (el baseline de detect-secrets).
+# Cloudflare Pages construye en Linux: acá se evita el mismo ping-pong.
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.woff2 binary
