@@ -12,10 +12,18 @@
 const ORIGEN = "https://elcuadernodeobra.com";
 const ORIGENES_OK = [ORIGEN, "https://www.elcuadernodeobra.com"];
 
-/* Los previews viven en *.workers.dev; se permiten para poder probar
-   antes de mergear, pero nunca un origen cualquiera. */
+/* Los previews de cada rama se permiten para poder probar antes de
+   mergear, pero acotados a ESTA cuenta.
+   `workers.dev` es un dominio compartido: cualquier usuario de Cloudflare
+   tiene un subdominio ahí, así que aceptar `*.workers.dev` a secas le
+   abriría el formulario a cualquiera. Se exige el subdominio de la cuenta.
+   Y el nombre de un preview lleva dos etiquetas antes de la cuenta
+   (`rama-proyecto.cuenta.workers.dev`), cosa que la primera versión de
+   esta regla no contemplaba: el navegador daba "origen no permitido"
+   mientras curl pasaba, porque curl mandaba el origen a mano. */
+const PREVIEW = /^https:\/\/[a-z0-9-]+\.ventanaarq-ai\.workers\.dev$/;
 const esOrigenPermitido = origen =>
-  !!origen && (ORIGENES_OK.includes(origen) || /^https:\/\/[a-z0-9-]+\.workers\.dev$/.test(origen));
+  !!origen && (ORIGENES_OK.includes(origen) || PREVIEW.test(origen));
 
 const json = (datos, estado, origen) =>
   new Response(JSON.stringify(datos), {

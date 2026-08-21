@@ -101,6 +101,25 @@ titulo("robots y orígenes ajenos");
   const r = await pedir({ correo: "a@b.com" }, { origen: null });
   afirmar("rechaza una petición sin origen", r.status, 403);
 }
+/* Esto lo encontró el navegador, no curl: el origen de un preview lleva
+   DOS etiquetas antes de la cuenta, y la primera regla sólo aceptaba una.
+   Con curl no aparecía porque el origen se mandaba a mano. */
+{
+  prepararResend();
+  const r = await pedir({ correo: "a@b.com" },
+    { origen: "https://feat-suscripcion-cuaderno-de-obra.ventanaarq-ai.workers.dev" });
+  afirmar("acepta el preview de una rama", r.status, 200);
+}
+{
+  const llamadas = prepararResend();
+  const r = await pedir({ correo: "a@b.com" }, { origen: "https://otro-usuario.workers.dev" });
+  afirmar("rechaza un workers.dev de otra cuenta", r.status, 403);
+  afirmar("y no anota nada", llamadas.length, 0);
+}
+{
+  const r = await pedir({ correo: "a@b.com" }, { origen: "https://ventanaarq-ai.workers.dev.malo.com" });
+  afirmar("rechaza un dominio que sólo lo imita", r.status, 403);
+}
 {
   const r = await pedir({}, { metodo: "GET" });
   afirmar("un GET a /suscribir no anota", r.status, 405);
