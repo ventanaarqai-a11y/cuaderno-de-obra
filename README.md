@@ -58,3 +58,29 @@ para que no existan tres copias que después divergen.
 - Comprar `elcuadernodeobra.com` (~USD 10,44/año, Cloudflare Registrar) — está libre.
 - Crear el repo remoto y conectarlo a Cloudflare Pages.
 - La tarea de los viernes que deja el reporte en `reportes/`.
+
+## La suscripción
+
+El sitio tiene **una sola ruta con código**: `POST /suscribir`, en `worker/index.mjs`.
+Todo lo demás son archivos, y Cloudflare los sirve primero — por eso agregar el endpoint no
+puede romper una página que ya funciona.
+
+```bash
+node pruebas-worker.mjs    # el endpoint, sin desplegar nada
+```
+
+Las pruebas reemplazan Resend por un doble que registra las llamadas, así se verifica que
+**nunca se anota a nadie** en los casos que deben rechazarse, sin tocar la lista real.
+
+### Lo que hace falta configurar una sola vez
+
+```bash
+npx wrangler login
+npx wrangler secret put RESEND_API_KEY     # la clave NUNCA va al repositorio
+```
+
+Y el id de la lista, que no es secreto, va en `wrangler.jsonc` → `vars.RESEND_AUDIENCE_ID`.
+
+**Si falta cualquiera de los dos, el endpoint falla ruidoso y lo dice en el registro.** Es a
+propósito: lo peor que puede pasar es responder "listo" y perder el correo de alguien que
+quiso anotarse.

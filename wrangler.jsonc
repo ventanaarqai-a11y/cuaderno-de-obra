@@ -1,0 +1,35 @@
+{
+  // Configuración del sitio en Cloudflare.
+  //
+  // Regla de oro acá: `assets` se sirve PRIMERO. Cualquier ruta que exista
+  // en publico/ nunca llega al Worker, así que agregar código no puede
+  // romper una página que ya funciona.
+  //
+  // La única excepción es `run_worker_first`: /suscribir va SIEMPRE al
+  // Worker. Sin eso, el manejo de rutas inexistentes podría devolverle el
+  // HTML del sitio al formulario, y el navegador recibiría una página
+  // entera donde espera una respuesta — un fallo silencioso, de los peores.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "cuaderno-de-obra",
+  "main": "worker/index.mjs",
+  "compatibility_date": "2026-08-20",
+
+  "assets": {
+    "directory": "./publico",
+    "run_worker_first": ["/suscribir"]
+  },
+
+  "observability": {
+    // Sin esto, un fallo al anotar un correo se pierde sin dejar rastro.
+    "enabled": true
+  },
+
+  "vars": {
+    // El id de la lista NO es secreto: identifica, no autoriza.
+    // Se completa cuando exista la cuenta de Resend.
+    "RESEND_AUDIENCE_ID": ""
+  }
+
+  // RESEND_API_KEY va como SECRETO, nunca acá ni en el repositorio:
+  //   npx wrangler secret put RESEND_API_KEY
+}
