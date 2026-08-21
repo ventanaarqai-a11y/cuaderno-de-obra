@@ -26,8 +26,7 @@
 
   "vars": {
     // El id de la lista NO es secreto: identifica, no autoriza.
-    // Se completa cuando exista la cuenta de Resend.
-    "RESEND_AUDIENCE_ID": ""
+    "RESEND_AUDIENCE_ID": "94e5a0a1-a57d-43e6-9b0f-2ff0e2f7bfcb"
   }
 
   // RESEND_API_KEY va como SECRETO, nunca acá ni en el repositorio:
