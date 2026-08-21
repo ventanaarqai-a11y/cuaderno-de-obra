@@ -180,6 +180,41 @@ img, svg { max-width: 100%; }
 .boton--fantasma { background: transparent; color: var(--tinta); box-shadow: inset 0 0 0 1px var(--linea-2); }
 .boton--fantasma:hover { background: var(--panel-3); color: var(--tinta); }
 
+/* ── Formulario de suscripción ─────────────────────────────────────
+   Un solo campo. Escribir el correo y apretar enter alcanza: todo lo
+   demás lo hacemos nosotros. */
+.suscri { display: flex; flex-direction: column; gap: 0; width: 100%; max-width: 460px; }
+.suscri-campo { display: flex; gap: 1px; background: var(--linea-2); transition: background .2s ease; }
+.suscri-campo input {
+  flex: 1; min-width: 0; background: var(--panel); border: 0; color: var(--tinta);
+  font-family: var(--lectura); font-weight: 300; font-size: 17px; padding: 15px 16px;
+}
+.suscri-campo input::placeholder { color: var(--tinta-4); }
+.suscri-campo input:focus { outline: none; background: var(--panel-3); }
+.suscri-campo button {
+  background: var(--papel); color: var(--negro); border: 0; cursor: pointer;
+  font-family: var(--grafico); font-weight: 500; font-size: 11px; letter-spacing: .18em;
+  text-transform: uppercase; padding: 0 20px; white-space: nowrap; transition: background .2s ease;
+}
+.suscri-campo button:hover:not(:disabled) { background: var(--tinta); }
+.suscri-campo button:disabled { cursor: default; color: var(--tinta-4); background: var(--panel-3); }
+.suscri[data-estado="error"] .suscri-campo { background: #e8b23c; }
+/* La trampa para robots: fuera de pantalla, sin foco y sin lectura. */
+.suscri-trampa { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.suscri-aviso { display: none; gap: 9px; align-items: flex-start; margin-top: 12px; }
+.suscri[data-estado="error"] .suscri-aviso,
+.suscri[data-estado="listo"] .suscri-aviso { display: flex; }
+.suscri-aviso i { width: 8px; height: 8px; border-radius: 50%; flex: 0 0 auto; margin-top: 6px; display: block; background: var(--tinta-4); }
+.suscri[data-estado="error"] .suscri-aviso i { background: #e8b23c; }
+.suscri[data-estado="listo"] .suscri-aviso i { background: var(--papel); box-shadow: 0 0 10px 2px rgba(255,255,255,.20); }
+.suscri-aviso p { margin: 0; font-family: var(--lectura); font-size: 17px; line-height: 1.5; color: var(--tinta-2); }
+.suscri-privacidad {
+  font-family: var(--grafico); font-weight: 400; font-size: 9px; letter-spacing: .16em;
+  color: var(--tinta-5); line-height: 1.9; margin: 14px 0 0;
+}
+.suscri[data-estado="listo"] .suscri-campo,
+.suscri[data-estado="listo"] .suscri-privacidad { display: none; }
+
 /* ── Nav pill ─────────────────────────────────────────────────────── */
 .pill {
   position: fixed; top: 20px; left: 50%; transform: translate(-50%, -14px); z-index: 40;
@@ -319,6 +354,13 @@ img, svg { max-width: 100%; }
   .cajon { min-height: auto; position: static; padding: 24px 0 40px; }
   .prosa { font-size: 17px; }
   .pill nav { display: none; }
+}
+
+/* Medido: a 375 px quedan 331 disponibles y el botón ocupa 205, así que
+   al campo le sobrarían 125 px — no entra un correo. Se apilan. */
+@media (max-width: 560px) {
+  .suscri-campo { flex-direction: column; }
+  .suscri-campo button { padding: 15px 20px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -617,6 +659,88 @@ function cifraHTML(c) {
   '</div>';
 }
 
+/* ===================================================================
+   El formulario de suscripción.
+   Un campo, enter, listo. Todo lo demás pasa del otro lado.
+   Funciona sin JavaScript: si el script no corre, sigue siendo un
+   formulario que postea a /suscribir y el Worker responde igual.
+   =================================================================== */
+function formularioHTML() {
+  return '' +
+  '<form class="suscri" id="suscri" data-estado="normal" novalidate action="/suscribir" method="post">' +
+    '<div class="suscri-campo">' +
+      '<label for="suscri-correo" class="suscri-trampa">Tu correo</label>' +
+      '<input id="suscri-correo" name="correo" type="email" inputmode="email" autocomplete="email" ' +
+             'placeholder="tu@correo.com" required aria-describedby="suscri-aviso">' +
+      '<button type="submit">Enterarme de todo</button>' +
+    '</div>' +
+    /* Campo trampa: una persona no lo ve ni lo completa; un robot sí. */
+    '<div class="suscri-trampa" aria-hidden="true">' +
+      '<label for="suscri-web">No completar</label>' +
+      '<input id="suscri-web" name="web" type="text" tabindex="-1" autocomplete="off">' +
+    '</div>' +
+    '<div class="suscri-aviso" id="suscri-aviso" role="status" aria-live="polite">' +
+      '<i></i><p id="suscri-mensaje"></p>' +
+    '</div>' +
+    '<p class="suscri-privacidad">Una entrada por semana. Sólo se guarda tu correo, no se comparte con nadie, y te podés dar de baja desde cualquier envío.</p>' +
+  '</form>';
+}
+
+/* Se conecta después de pintar la vista, como el cajón. */
+function conectarFormulario() {
+  const form = document.getElementById("suscri");
+  if (!form) return;
+
+  const campo = document.getElementById("suscri-correo");
+  const boton = form.querySelector("button");
+  const mensaje = document.getElementById("suscri-mensaje");
+  const textoBoton = boton.textContent;
+
+  const decir = (estado, texto) => {
+    form.setAttribute("data-estado", estado);
+    mensaje.textContent = texto || "";
+  };
+
+  form.addEventListener("submit", async ev => {
+    ev.preventDefault();
+    const correo = campo.value.trim();
+
+    /* El mismo chequeo que hace el servidor, para no ir y volver por un
+       error que se ve desde acá. El del servidor es el que manda igual. */
+    if (!/^[^@\s]+@[a-z0-9.-]+\.[a-z]{2,}$/i.test(correo)) {
+      decir("error", "Eso no parece un correo. Fijate que tenga un @ y un punto.");
+      campo.focus();
+      return;
+    }
+
+    boton.disabled = true;
+    boton.textContent = "Anotando…";
+    decir("normal", "");
+
+    try {
+      const r = await fetch("/suscribir", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ correo, web: form.querySelector("#suscri-web").value })
+      });
+      const datos = await r.json().catch(() => ({}));
+
+      if (r.ok && datos.ok) {
+        decir("listo", datos.estado === "ya estaba"
+          ? "Ya estabas anotado. El lunes te llega igual."
+          : "Listo. El lunes te llega la primera.");
+        return;
+      }
+      decir("error", datos.mensaje || "No pude anotarte. Probá de nuevo en un minuto.");
+    } catch {
+      decir("error", "No pude conectarme. Fijate tu conexión y probá de nuevo.");
+    } finally {
+      boton.disabled = false;
+      boton.textContent = textoBoton;
+    }
+  });
+}
+
 /* ── Vistas ───────────────────────────────────────────────────────── */
 function vistaHome() {
   const e = ENTRADAS[0];
@@ -683,7 +807,8 @@ function vistaHome() {
       '<h2 class="display d-xl" data-reveal>Seguir el <span class="tenue">progreso</span></h2>' +
       '<div class="pila" style="gap:22px; align-items:flex-start;" data-reveal>' +
         '<p class="prosa-s">Una entrada por semana con lo hecho y lo pendiente. No hay beta todavía; cuando abra, se avisa acá primero.</p>' +
-        '<a class="boton" href="#/entradas">Ver todas las entradas</a>' +
+        formularioHTML() +
+        '<a class="boton boton--fantasma" href="#/entradas">Ver todas las entradas</a>' +
       '</div>' +
     '</div>' +
   '</section>';
@@ -1042,6 +1167,7 @@ function pintar() {
     a.setAttribute("aria-current", a.getAttribute("href") === "#" + (ruta === "/" ? "/" : ruta) ? "page" : "false"));
 
   cajonActivo = -1;
+  conectarFormulario();
   alScrollearCajon = conectarCajon();
   if (alScrollearCajon) alScrollearCajon();
 

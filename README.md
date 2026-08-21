@@ -53,8 +53,38 @@ para que no existan tres copias que después divergen.
 5. **Acá nunca entran datos sensibles.** Por eso este repo está separado de `Marketing-OS`,
    que guarda análisis reales.
 
-## Qué falta
+## Dónde vive
 
-- Comprar `elcuadernodeobra.com` (~USD 10,44/año, Cloudflare Registrar) — está libre.
-- Crear el repo remoto y conectarlo a Cloudflare Pages.
-- La tarea de los viernes que deja el reporte en `reportes/`.
+**https://elcuadernodeobra.com** (y `www`). Dominio registrado en Hostinger, DNS y hosting en
+Cloudflare. Publicar es un `git push` a `main`; cada rama tiene su propia URL de vista previa,
+así que un cambio se puede ver en vivo antes de tocar producción.
+
+La tarea de los viernes deja el reporte de la semana y un borrador de entrada en `reportes/`.
+Va ahí y no a `contenido/` a propósito: así nada se publica por accidente.
+
+## La suscripción
+
+El sitio tiene **una sola ruta con código**: `POST /suscribir`, en `worker/index.mjs`.
+Todo lo demás son archivos, y Cloudflare los sirve primero — por eso agregar el endpoint no
+puede romper una página que ya funciona.
+
+```bash
+node pruebas-worker.mjs    # el endpoint, sin desplegar nada
+```
+
+Las pruebas reemplazan Resend por un doble que registra las llamadas, así se verifica que
+**nunca se anota a nadie** en los casos que deben rechazarse, sin tocar la lista real.
+
+### Lo que hace falta configurar una sola vez
+
+El deploy es por Git, así que el secreto se carga en el panel, no con `wrangler`:
+
+**Workers & Pages → `cuaderno-de-obra` → Settings → Variables and Secrets**, tipo *Secret*,
+nombre `RESEND_API_KEY`. **La clave nunca va al repositorio.**
+
+El id de la lista sí vive en `wrangler.jsonc` → `vars.RESEND_AUDIENCE_ID`: identifica, no
+autoriza.
+
+**Si falta cualquiera de los dos, el endpoint falla ruidoso y lo dice en el registro.** Es a
+propósito: lo peor que puede pasar es responder "listo" y perder el correo de alguien que
+quiso anotarse.
