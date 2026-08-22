@@ -21,7 +21,7 @@ Repo: `D:\INFORMACION\MARCA PERSONAL\cuaderno-de-obra` — rama `main`.
 | Sitio en vivo, dominio, DNS | ✅ funcionando |
 | 5 entradas publicadas | ✅ |
 | Captura de correo (`POST /suscribir` → Resend) | ✅ verificado en el navegador |
-| **El giro a papel** | ✅ **aplicado a `plantilla/base.html` y verificado** |
+| **El giro a papel** | ✅ **PUBLICADO el 2026-08-21 — `edd9ec6`, verificado en elcuadernodeobra.com** |
 | El fondo (cuaderno pautado) | ✅ elegido entre 5 variantes y aplicado |
 | El cajón como carpeta manila + pestaña bordeaux | ✅ |
 | El diagrama optimizado (2.117 nodos → 34) | ✅ con su test rehecho |
@@ -120,7 +120,8 @@ Para mirar el sitio y las propuestas (dos servidores, en `.claude/launch.json` d
 
 ## Salvedades honestas
 
-- El papel **no se publicó**: el sitio en vivo sigue en negro hasta que se commitee y pushee.
+- El papel **está publicado y verificado en vivo**: fondo `rgb(250,249,245)`, pico 2,5 a 1280 y
+  1,6 a 375, sin scroll horizontal, consola limpia, las dos tipografías cargando de verdad.
 - La maqueta usa **Martian Mono** como reemplazo libre de **Oficía MONO**, que todavía no tiene
   licencia web comprada. Los dos son mono, pero no son la misma letra.
 - El cierre de la ficha al sacar el puntero está verificado **a mano en el navegador**, no por
