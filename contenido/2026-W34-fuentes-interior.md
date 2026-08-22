@@ -13,7 +13,9 @@ cifra:
   denominador: 2117
   unidad: municipios
   que_mide: Municipios argentinos con precio de mercado medido
-  fuente: docs/ESTADO_Y_PRIORIDADES.md §Fase E
+  fuente: Colegio de Escribanos de Santa Fe, 2ª Circunscripción
+  fuente_url: https://escribanos-stafe2da.org.ar/estadistica/
+  analisis: Relevamiento propio de VENTANA sobre seis fuentes argentinas · agosto 2026
 checklist:
   - hecho: Seis fuentes candidatas probadas con petición real
   - hecho: Córdoba y Neuquén cableadas a mercado

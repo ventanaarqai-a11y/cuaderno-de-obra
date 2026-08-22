@@ -93,6 +93,18 @@ function validarForma(e, archivo) {
   if (e.cifra.denominador < e.cifra.valor)
     throw new ErrorDeEntrada(archivo, null, "el denominador (" + e.cifra.denominador + ") no puede ser menor que el valor (" + e.cifra.valor + ")");
 
+  /* `fuente` dice de dónde salió el número; `fuente_url` deja que el lector
+     lo compruebe, y `analisis` dice quién lo compiló. Son tres cosas
+     distintas y no se colapsan: reemplazar la procedencia por la firma es
+     exactamente lo que este producto existe para no hacer.
+
+     Los dos nuevos son opcionales —hay cifras que salen de un archivo del
+     repo y no de una publicación— pero si `fuente_url` viene, tiene que ser
+     una URL de verdad. Una ruta de repo en un campo que el sitio va a
+     renderizar como link le promete al lector algo que no puede abrir. */
+  if (e.cifra.fuente_url !== undefined && !/^https?:\/\/[^\s]+$/.test(e.cifra.fuente_url))
+    throw new ErrorDeEntrada(archivo, null, "`fuente_url` tiene que ser una URL http(s), y vino: " + e.cifra.fuente_url);
+
   if (!e.checklist.length) throw new ErrorDeEntrada(archivo, null, "el checklist está vacío");
   e.checklist.forEach(it => {
     if (!ESTADOS.includes(it.estado)) throw new ErrorDeEntrada(archivo, null, "estado desconocido en el checklist: " + it.estado);

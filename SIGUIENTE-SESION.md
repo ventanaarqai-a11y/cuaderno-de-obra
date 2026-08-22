@@ -12,7 +12,7 @@ Boletín público semanal donde VENTANA registra su propia construcción. Vive e
 y mide con Cloudflare Web Analytics. **No es una landing de venta**: no hay beta ni
 usuarios, y cada entrada cierra con una pregunta, nunca con "solicitá acceso".
 
-Repo: `D:\INFORMACION\MARCA PERSONAL\cuaderno-de-obra` — rama `main`, limpia, `b759c85`.
+Repo: `D:\INFORMACION\MARCA PERSONAL\cuaderno-de-obra` — rama `main`.
 
 ## Dónde quedó
 
@@ -20,42 +20,94 @@ Repo: `D:\INFORMACION\MARCA PERSONAL\cuaderno-de-obra` — rama `main`, limpia, 
 |---|---|
 | Sitio en vivo, dominio, DNS | ✅ funcionando |
 | 5 entradas publicadas | ✅ |
-| Captura de correo (`POST /suscribir` → Resend) | ✅ 33 pruebas, verificado en el navegador |
-| Skills `cuaderno-diseno` y `cuaderno-escritura` | ✅ escritas y al día |
-| **El giro a papel** | 🟡 **maqueta verificada, NO aplicada al sitio** |
-| El diagrama de cobertura optimizado | 🟡 probado en la maqueta, no en el sitio |
+| Captura de correo (`POST /suscribir` → Resend) | ✅ verificado en el navegador |
+| **El giro a papel** | ✅ **aplicado a `plantilla/base.html` y verificado** |
+| El fondo (cuaderno pautado) | ✅ elegido entre 5 variantes y aplicado |
+| El cajón como carpeta manila + pestaña bordeaux | ✅ |
+| El diagrama optimizado (2.117 nodos → 34) | ✅ con su test rehecho |
+| El pie con redes (LinkedIn, X) y correo de contacto | ✅ | |
+| La estructura (jerarquía, ejes, escala) | ✅ **aplicada: pico 9,4 → 2,5, ejes 3 → 1, tamaños 12 → 5** |
+| El pie de la lámina con leyenda, link y autoría | ✅ y el modelo de contenido ganó `fuente_url` y `analisis` |
 | Fase 3 — el correo del lunes | ❌ no empezada |
-| Skill de lectura de métricas | ❌ no empezada |
+
+## Lo que se hizo el 2026-08-21
+
+**El papel, aplicado de verdad al sitio.** El rename tocó 99 usos de token repartidos entre
+el `<style>` y los generadores de SVG del `<script>`. Dos aserciones nuevas en `pruebas.js`
+impiden que sobreviva un token o un hex del mundo oscuro en cualquier parte del archivo.
+
+**Los alfas de tinta se corrigieron por contraste medido, no por gusto.** El sistema viejo
+pintaba rótulos de 9 px con el equivalente a `--tinta-45` = **2,95:1**, que no pasa AA. El
+piso para texto ahora es `--tinta-62` = **5,07:1**, y hay un test que se pone rojo si un
+`color:` aterriza en `--tinta-45` o `--tinta-25`.
+
+**Tres bugs que la verificación destapó, ninguno buscado:**
+
+1. **El generador de posiciones del campo sólo podía producir 252 de 2.117 celdas.** Era un
+   LCG multiplicativo (`s = s*48271 % 2117`); su órbita desde `s=7` mide 252. Con
+   `valor > 252` el `while` no terminaba nunca y **colgaba la construcción del sitio**. Ahora
+   es un paso coprimo (997) que recorre el campo entero y no puede no terminar.
+2. **A 375 px el índice tenía scroll horizontal** (543 px de ancho). Las pestañas del cajón
+   medían 364 px y nada las acotaba. Era preexistente: lo tenía que haber cazado la
+   verificación de móvil que nunca se hizo.
+3. **La ficha del cajón se comía el puntero.** Abierta, se montaba encima de las carpetas con
+   `pointer-events:auto`: no se podía llegar a ninguna otra carpeta y había que volver al tope
+   de la página. Ahora sale **por debajo** de la pila y no intercepta nada.
+
+**La estructura, medida contra cuatro referencias.** El dueño marcó que VENTANA se veía
+enorme al lado de un titular más importante y que las palabras quedaban desparramadas. Se
+midió en vivo a 1280 px:
+
+| | pico | ejes de titular | tamaños |
+|---|---|---|---|
+| **El Cuaderno** | **9,4** | **3** | **12** |
+| antimetal.com | 2,3 | 2 | 9 |
+| rerun.io/blog | 2,3 | 1 | 5 |
+| every.to | 2,4 | 5 | 12 |
+| pragmaticengineer | 1,6 | 0 | 5 |
+
+*Pico* = tamaño del elemento mayor ÷ cuerpo. Las referencias caen entre 1,6 y 2,4; el
+cuaderno está 4× afuera, y lo que domina es el nombre del producto, no lo que se lee.
+La propuesta completa está en `propuestas-ui/cuaderno-estructura.html`.
 
 ## Lo abierto, en orden
 
-1. **Aplicar el papel al sitio real.** `plantilla/base.html` sigue en negro
-   (`--negro:#000000`, `--tinta:#ffffff`, línea 21). La maqueta aprobada está en
-   `C:\Users\marce\OneDrive\Desktop\VENTANA\propuestas-ui\cuaderno-papel.html`:
-   fondo `#FAF9F5`, tinta `#141413`, cuerpo 19px/1.6, medida 60-66ch, titular 62px/1.05
-   con tracking negativo. Todo eso está escrito en `cuaderno-diseno` §2 y §2bis.
-2. **Seguir afinando el background.** Es lo que el dueño quiere mirar de nuevo: hoy la
-   maqueta tiene papel liso y él pidió "blanco con líneas negras". La grilla de líneas
-   todavía no está resuelta.
-3. **Llevar la optimización del diagrama al sitio.** Medido: la lámina son **39 nodos**
-   contra los **2.117 rects** que el sitio sirve hoy — el 93% del DOM.
-4. **Renombrar "entradas"** (al dueño no le gusta la palabra). Propuestas sobre la mesa:
-   *partes*, *asientos*, *fojas*.
-5. **Fase 3 — el correo del lunes**: se genera del mismo `.md` de la entrada, nunca se
-   escribe aparte, y **nunca sale sin revisión del dueño**. Sumar el conteo de suscriptos
-   al reporte del viernes.
+1. **Commitear y publicar.** Todo está verde, verificado y medido, pero **sin commitear**. El
+   sitio en vivo sigue negro. Es lo único que falta para que exista.
+3. **La imagen OG no existe.** Se sacó del índice el bloque que la mostraba (era una nota de
+   trabajo interna en una vista pública) y con él `ogHTML()`, que quedaba sin llamador. Pero
+   **el sitio sigue sin imagen de vista previa**: al compartir el link en X, LinkedIn o
+   WhatsApp no se ve nada. Es un pendiente de marca, no de código.
+4. **Las cuatro entradas viejas siguen sin `fuente_url`.** Sólo la W34 tiene link. Las otras
+   cuatro renderizan `Fuente — <ruta de repo>`, que para un lector externo no sirve.
+5. **Las láminas de `agentes`, `pipeline` y `estados` tienen lectura pero no referencias.**
+   Sólo `cobertura` tiene la leyenda completa.
+6. **Renombrar "entradas"** (al dueño no le gusta la palabra): *partes*, *asientos*, *fojas*.
+7. **Fase 3 — el correo del lunes**: se genera del mismo `.md`, nunca se escribe aparte, y
+   nunca sale sin revisión del dueño.
+
+## Anotado para OTROS proyectos, explícitamente NO para el cuaderno
+
+El dueño pidió explorar estos diagramas como **motion en Claude Design**, o como **carrusel**,
+para explicaciones más largas — y aclaró que **no es para este blog**. Acá no entra: una entrada
+semanal se lee en dos minutos y una animación pide quedarse. Va al backlog de marca, no al del
+cuaderno.
 
 ## Reglas duras — ya se pagaron, no se rediscuten
 
 - **Un solo lector de entradas** (`leer.js`). Nada de copias divergentes.
 - **Ninguna cifra sin `valor`, `denominador`, `unidad`, `que_mide` y `fuente`.** `validar.js`
   es la puerta y aborta con `archivo:línea`.
-- **Verde no es evidencia.** Cualquier prueba nueva se verifica rompiendo lo que dice
-  proteger. En este repo ya hubo cuatro falsos verdes.
+- **Verde no es evidencia.** Cualquier prueba nueva se verifica rompiendo lo que dice proteger.
+  El barrido de hoy: **12 de 12 mutaciones cazadas por la aserción correcta**.
+- **La nota de tipografía salió del pie visible** pero la declaración de que Martian Mono es
+  un SUSTITUTO de Oficía MONO vive en el comentario del bloque de tokens, con su test.
+- **El texto vive en `--tinta-62` o más oscuro.** `.45` y `.25` son para puntos y tramas.
+- **El bordeaux sólo aparece en cuatro lugares** (§2 de `cuaderno-diseno`). No viaja.
+- **El dibujo dice lo mismo que la cifra**, y el generador aborta si el campo no cubre el
+  denominador.
 - **Ningún secreto en el repo ni en el chat.** `RESEND_API_KEY` vive como secreto del Worker.
-- **`assets` se sirve primero**; sólo `/suscribir` va al Worker. Agregar código no puede
-  romper una página que ya anda.
-- **Tipos prohibidos entre 13 y 16px** (`cuaderno-diseno`). Es la banda ilegible.
+- **Tipos prohibidos entre 13 y 16 px.** Es la banda ilegible.
 
 ## Comandos
 
@@ -63,19 +115,20 @@ Repo: `D:\INFORMACION\MARCA PERSONAL\cuaderno-de-obra` — rama `main`, limpia, 
 node validar.js && node construir.js && node pruebas.js
 ```
 
-```bash
-node pruebas-worker.mjs
-```
+Para mirar el sitio y las propuestas (dos servidores, en `.claude/launch.json` de VENTANA):
+`cuaderno` en el puerto 8940 y `propuestas-ui` en el 8931.
 
 ## Salvedades honestas
 
-- La maqueta de papel **no está verificada en móvil**: el último intento de achicar el
-  viewport a 375px devolvió `vw:1280`, o sea que no redimensionó. Hay que rehacerlo.
-- La maqueta usa **Martian Mono** como reemplazo libre de **Oficía MONO**, que todavía no
-  tiene licencia web comprada. Los dos son mono, pero no son la misma letra.
+- El papel **no se publicó**: el sitio en vivo sigue en negro hasta que se commitee y pushee.
+- La maqueta usa **Martian Mono** como reemplazo libre de **Oficía MONO**, que todavía no tiene
+  licencia web comprada. Los dos son mono, pero no son la misma letra.
+- El cierre de la ficha al sacar el puntero está verificado **a mano en el navegador**, no por
+  un test de la suite: `pruebas.js` corre sin navegador y no puede ejercer eventos de puntero.
 
 ## Del lado del dueño
 
+- Las tres decisiones de estructura del punto 2.
 - Borrar de Resend los dos contactos de prueba (los dos terminan en `@ejemplo.com`).
 - Verificar si Resend **deduplica**: `prueba-borrar@ejemplo.com` se mandó 6 veces y las 6
   respondieron 200. Si crea duplicados, un suscripto recibiría el correo dos veces.
@@ -86,24 +139,25 @@ node pruebas-worker.mjs
 ## Prompt para pegar en la sesión nueva
 
 > Trabajo en **El Cuaderno de Obra**, el boletín público de VENTANA
-> (`elcuadernodeobra.com`). El repo es `D:\INFORMACION\MARCA PERSONAL\cuaderno-de-obra`
-> y está limpio en `main`.
+> (`elcuadernodeobra.com`). El repo es `D:\INFORMACION\MARCA PERSONAL\cuaderno-de-obra`.
 >
-> Antes de tocar nada, leé `SIGUIENTE-SESION.md` del repo, y cargá las skills
+> Antes de tocar nada, leé `SIGUIENTE-SESION.md` del repo y cargá las skills
 > `cuaderno-diseno` y `cuaderno-escritura`
 > (`C:\Users\marce\OneDrive\Desktop\VENTANA\.claude\skills\`).
 >
-> **La tarea de hoy es el diseño, y sólo el diseño.** El sitio en vivo sigue en fondo
-> negro y quiero pasarlo a papel. La maqueta que ya aprobé está en
-> `C:\Users\marce\OneDrive\Desktop\VENTANA\propuestas-ui\cuaderno-papel.html` — abrila
-> primero y trabajá desde ahí.
+> **El giro a papel ya está aplicado y verificado, pero sin commitear: el sitio en vivo sigue
+> en negro.** Lo que falta es la ESTRUCTURA. Abrí
+> `C:\Users\marce\OneDrive\Desktop\VENTANA\propuestas-ui\cuaderno-estructura.html` —ahí está la
+> medición contra cuatro referencias y las tres decisiones pendientes— y arrancá preguntándome
+> esas tres.
 >
-> En este orden:
-> 1. Aplicá el papel a `plantilla/base.html` sin que cambie nada de la estructura.
-> 2. **Afiná el background**: quiero blanco con líneas negras, no papel liso. Mostrame
->    dos o tres variantes antes de elegir.
-> 3. Revisá interlineado y tipografía contra lo que dice `cuaderno-diseno` §2bis.
-> 4. Verificá en móvil de verdad (375px) — la última vez no redimensionó y quedó sin probar.
+> Con eso decidido:
+> 1. Aplicá la estructura a `plantilla/base.html` y **volvé a medir el pico** para confirmar
+>    que entró en la banda 2–3. La medición no se estima: se corre con un navegador real.
+> 2. Sumale a la lámina el **cuadro de referencias** y la línea de lectura.
+> 3. Verificá a 1280 y a 375 px de verdad — afirmá `window.innerWidth` antes de sacar la
+>    captura, y que no haya scroll horizontal en ninguna vista.
 >
-> Cerrá con `node validar.js && node construir.js && node pruebas.js` en verde, y
-> mostrame capturas antes de proponer el commit. **No publiques sin que yo lo vea.**
+> Cerrá con `node validar.js && node construir.js && node pruebas.js` en verde y **el barrido de
+> mutación**: un verde que no se pone rojo al romper lo que dice proteger no vale.
+> Mostrame capturas antes de proponer el commit. **No publiques sin que yo lo vea.**

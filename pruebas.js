@@ -119,16 +119,80 @@ afirmar("pide las dos tipografías",
   html.includes("Martian+Mono") && html.includes("Prompt:ital"), true);
 afirmar("no quedó ninguna tipografía vieja",
   /Space\+Grotesk|IBM\+Plex|family=Inter/.test(html), false);
-afirmar("declara el sustituto de tipografía", html.includes("Nota de tipograf"), true);
+/* La declaración de que Martian Mono es un SUSTITUTO de Oficía MONO salió
+   del pie visible el 2026-08-21 —le hablaba a quien mantiene el sitio, no a
+   quien lo lee, y ocupaba cinco líneas— pero no puede desaparecer: el día
+   que se compre la licencia hay que saber qué se está reemplazando. Vive en
+   el comentario del bloque de tokens y se verifica ahí. */
+afirmar("declara que la mono es un sustituto",
+  /SUSTITUIDA por[\s\S]{0,120}Martian Mono/.test(html) && html.includes("Oficía"), true);
+
+/* El giro a papel del 2026-08-21. Un token del mundo oscuro que sobreviva
+   deja texto invisible sin que nadie se entere, y el rename tocó 99 usos
+   repartidos entre el <style> y los generadores de SVG del <script>: se
+   revisa el archivo ENTERO, no sólo la hoja de estilos. */
+afirmar("ningún token del mundo oscuro sobrevive",
+  (html.match(/--(negro|panel|fondo-2|tinta-[2-6])(?![\w-])/g) || []), []);
+afirmar("ni un hex del mundo oscuro en los diagramas",
+  (html.match(/#(fafafa|333333|161616|111111|3d3d3d|2a2a2a|555555|888888|aaaaaa|1c1c1c|0d0d0d|050505|000000)\b/gi) || []), []);
+afirmar("el cuerpo se pinta papel", html.includes("background: var(--papel);"), true);
+
+/* El pie es la única forma de contacto que tiene el sitio: el cuaderno existe
+   para que haya gente esperando cuando abra la beta. Un href vacío, un `#` o
+   un placeholder sin reemplazar lo rompe sin que nadie se entere. */
+const pie = html.split('<footer')[1] || "";
+afirmar("el pie tiene las tres formas de contacto",
+  (pie.match(/href="(https?:\/\/|mailto:)[^"]+"/g) || []).length, 3);
+afirmar("ningún link del pie quedó sin completar",
+  /href="(#|\s*|__[A-Z]+__|\.\.\.)"/.test(pie), false);
+afirmar("la hoja es hueso, no blanco puro", html.includes("--papel:    #FAF9F5;"), true);
+afirmar("la tinta es negra cálida, no negro puro", html.includes("--tinta:     #141413;"), true);
+
+/* Los alfas .45 y .25 NO pasan AA sobre el papel (2,95:1 y 1,73:1, medidos):
+   existen para puntos, tramas y contornos. Si alguno aterriza en una regla
+   de `color`, eso es texto ilegible. El piso para texto es --tinta-62. */
+/* El lookbehind es necesario: sin él, `text-decoration-color: var(--tinta-45)`
+   cazaba como si fuera texto. El color de un subrayado no es texto pintado, y
+   un test que se pone rojo por algo que no dice medir es tan inútil como uno
+   que se queda verde. */
+afirmar("ningún texto pintado con un alfa que no pasa AA",
+  (html.split("<style>")[1].split("</style>")[0].match(/(?<![-\w])color: var\(--tinta-(45|25)\)/g) || []), []);
 afirmar("sin tamaños en la banda prohibida 13-16 px",
   (html.split("<style>")[1].split("</style>")[0].match(/font-size: ?1[3-6](\.[0-9])?px/g) || []), []);
+
+/* CINCO TAMAÑOS Y NADA MÁS: 9 · 12 · 19 · 30 · 48, cada salto ≥ 1,33.
+
+   Medido el 2026-08-21 contra cuatro referencias: el PICO —el elemento
+   mayor dividido por el cuerpo— vive entre 1,6 y 2,4 en rerun, antimetal,
+   every.to y pragmaticengineer. Esta página estaba en 9,4 con DOCE tamaños
+   y cinco pares que se diferenciaban menos del 15 %: dos escalones que
+   nadie distingue no son jerarquía, son ruido.
+
+   Se revisan el <style> Y los estilos escritos a mano en el <script>: la
+   mitad de los tamaños sueltos vivían en atributos `style=` del JS, que la
+   aserción de la banda prohibida no mira. Los `clamp()` se verifican por su
+   MÁXIMO, que es lo que se ve en escritorio; el mínimo puede ser cualquier
+   valor de la escala hacia abajo. */
+const ESCALA = [9, 12, 19, 30, 48];
+const tamanosDeclarados = texto => {
+  const sueltos = [...texto.matchAll(/font-size: ?([0-9.]+)px/g)].map(m => +m[1]);
+  const topes = [...texto.matchAll(/clamp\(\s*([0-9.]+)px\s*,[^,]+,\s*([0-9.]+)px\s*\)/g)]
+    .flatMap(m => [+m[1], +m[2]]);
+  return [...new Set(sueltos.concat(topes))].sort((a, b) => a - b);
+};
+const estilos = html.split("<style>")[1].split("</style>")[0];
+const script = html.match(/<script>([\s\S]*)<\/script>/)[1];
+afirmar("cinco tamaños y nada más, en el CSS",
+  tamanosDeclarados(estilos).filter(t => !ESCALA.includes(t)), []);
+afirmar("cinco tamaños y nada más, también en el JS",
+  tamanosDeclarados(script).filter(t => !ESCALA.includes(t)), []);
 
 /* ── 3. Lo que el sitio renderiza ─────────────────────────────────── */
 titulo("renderizar");
 const js = html.match(/<script>([\s\S]*)<\/script>/)[1].split("const quieto = window.matchMedia")[0];
 global.window = { matchMedia: () => ({ matches: false }) };
 const ambito = {};
-eval(js + "\nObject.assign(ambito, { vistaHome, vistaIndice, vistaEntrada, ordenCajon, cifraHTML, posicionPorProgreso, ENTRADAS, AREAS });");
+eval(js + "\nObject.assign(ambito, { vistaHome, vistaIndice, vistaEntrada, ordenCajon, cifraHTML, posicionPorProgreso, svgCobertura, ENTRADAS, AREAS });");
 const S = ambito;
 
 const vistas = { home: S.vistaHome(), indice: S.vistaIndice(), "404": S.vistaEntrada("no-existe") };
@@ -150,8 +214,8 @@ for (const k of Object.keys(vistas)) {
 titulo("el cajón");
 const N = S.ENTRADAS.length;
 const enPct = f => S.posicionPorProgreso(f * 1000, 1000, N);
-afirmar("arranca cerrado", enPct(0), -1);
-afirmar("abre la primera al 6 %", enPct(0.06), 0);
+afirmar("arranca con la primera abierta", enPct(0), 0);
+afirmar("y sigue en la primera al 6 %", enPct(0.06), 0);
 afirmar("el final abre la última", enPct(1), N - 1);
 afirmar("nunca se pasa del final", enPct(1.6), N - 1);
 afirmar("sin recorrido abre la primera", S.posicionPorProgreso(0, 0, N), 0);
@@ -168,9 +232,61 @@ afirmar("una carpeta por entrada", cuenta(vistas.indice, 'class="carpeta"'), N);
 
 titulo("el dibujo dice lo mismo que la cifra");
 const c0 = S.ENTRADAS[0].cifra;
-const enc = cuenta(vistas.home, 'fill="#fafafa"'), apa = cuenta(vistas.home, 'fill="#333333"');
-afirmar("cuadros encendidos = valor", enc, c0.valor);
-afirmar("encendidos + apagados = denominador", enc + apa, c0.denominador);
+
+/* Los 2.085 apagados dejaron de ser 2.085 rectángulos y pasaron a ser UN
+   elemento con patrón, así que ya no se pueden contar de a uno. Se afirma
+   lo mismo por otra vía: los encendidos se cuentan, y el denominador se lee
+   de la GEOMETRÍA del campo — cuántas celdas entran en el rectángulo.
+
+   Y se ejerce el GENERADOR con una cifra fabricada distinta de la real: un
+   test que lee el artefacto ya construido pasa aunque el generador esté
+   roto, y ese falso verde ya ocurrió en este repo. */
+const celdasDelCampo = svg => {
+  const pat = svg.match(/<pattern[^>]*width="([\d.]+)" height="([\d.]+)"/);
+  const campo = svg.match(/<rect[^>]*width="([\d.]+)" height="([\d.]+)" fill="url\(#apagados\)"/);
+  if (!pat || !campo) return null;
+  return Math.round(campo[1] / pat[1]) * Math.round(campo[2] / pat[2]);
+};
+const encendidos = svg => cuenta(svg, 'fill="var(--tinta)"/>');
+
+const fabricada = { valor: 500, denominador: 2117, unidad: "municipios",
+                    que_mide: "Fabricada acá para que no pueda pasar de casualidad", fuente: "pruebas.js" };
+const svgF = S.svgCobertura(fabricada);
+afirmar("el generador dibuja tantos encendidos como valor", encendidos(svgF), 500);
+afirmar("y el campo cubre exactamente el denominador", celdasDelCampo(svgF), 2117);
+
+const svgR = S.svgCobertura(c0);
+afirmar("la entrada real: encendidos = valor", encendidos(svgR), c0.valor);
+afirmar("la entrada real: campo = denominador", celdasDelCampo(svgR), c0.denominador);
+afirmar("y el campo llegó a la página", celdasDelCampo(vistas.home), c0.denominador);
+
+/* La optimización, afirmada y no narrada: el SVG entero son los encendidos
+   más el rectángulo del campo y la celda del patrón. Antes eran 2.117. */
+afirmar("un nodo por municipio medido, no uno por municipio",
+  cuenta(svgR, "<rect"), c0.valor + 2);
+
+/* Si la grilla y la cifra dejaran de coincidir, el dibujo diría otra cosa
+   que el texto. Tiene que abortar, no dibujar de más. */
+afirmarQueFalla("aborta si el campo no cubre el denominador",
+  () => S.svgCobertura({ valor: 32, denominador: 2118 }), "no puede decir otra cosa");
+
+/* ── El pie de la lámina ──────────────────────────────────────────────
+   Un plano lleva rótulo, escala, cotas Y CUADRO DE REFERENCIAS: sin la
+   leyenda, un cuadro lleno y uno vacío no significan nada para quien llega.
+   Y la fuente tiene que ser algo que el lector pueda abrir — el pie decía
+   `docs/ESTADO_Y_PRIORIDADES.md §Fase E`, la ruta de un repo privado. */
+const laminaCobertura = vistas.home.split('class="lamina"')[1] || "";
+afirmar("la lámina de cobertura declara sus referencias",
+  cuenta(laminaCobertura, 'class="ref-lleno"') === 1 && cuenta(laminaCobertura, 'class="ref-vacio"') === 1, true);
+afirmar("los dos números de la leyenda suman el denominador",
+  (laminaCobertura.match(/— ([\d.]+)</g) || []).slice(0, 2)
+    .map(x => +x.replace(/[^\d]/g, "")).reduce((a, b) => a + b, 0), c0.denominador);
+afirmar("la lámina dice qué NO es el campo",
+  laminaCobertura.includes("no es geográfica"), true);
+afirmar("la fuente con URL se renderiza como link",
+  /Fuentes — <a href="https?:\/\//.test(laminaCobertura), true);
+afirmar("y el análisis va en su propia línea, no mezclado con la fuente",
+  laminaCobertura.includes("Análisis — ") && !laminaCobertura.includes("Fuentes — Relevamiento"), true);
 S.ENTRADAS.forEach(e => {
   const conBarra = S.cifraHTML(e.cifra).includes("data-barra");
   const deberia = e.cifra.denominador > e.cifra.valor;
