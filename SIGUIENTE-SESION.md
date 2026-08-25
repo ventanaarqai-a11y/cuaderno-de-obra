@@ -19,7 +19,6 @@ Repo: `D:\INFORMACION\MARCA PERSONAL\cuaderno-de-obra` — rama `main`.
 | | estado |
 |---|---|
 | Sitio en vivo, dominio, DNS | ✅ funcionando |
-| 5 entradas publicadas | ✅ |
 | Captura de correo (`POST /suscribir` → Resend) | ✅ verificado en el navegador |
 | **El giro a papel** | ✅ **PUBLICADO el 2026-08-21 — `edd9ec6`, verificado en elcuadernodeobra.com** |
 | El fondo (cuaderno pautado) | ✅ elegido entre 5 variantes y aplicado |
@@ -30,7 +29,8 @@ Repo: `D:\INFORMACION\MARCA PERSONAL\cuaderno-de-obra` — rama `main`.
 | El pie de la lámina con leyenda, link y autoría | ✅ y el modelo de contenido ganó `fuente_url` y `analisis` |
 | La imagen de vista previa y sus meta tags | ✅ `publico/og.png` + el bloque entero, que no existía |
 | Las láminas: las cuatro con cuadro de referencias | ✅ con test que ejerce cada diagrama |
-| **La cadena viernes → lunes** | ✅ **conectada y ensayada de punta a punta** |
+| **La cadena viernes → lunes** | ✅ **AUTOMÁTICA: el lunes publica solo, sin intervención** |
+| 6 entradas publicadas | ✅ la W35 salió el 2026-08-24 por la cadena nueva |
 | Fase 3 — el correo del lunes | ❌ no empezada |
 
 ## Lo que se hizo el 2026-08-21
@@ -85,11 +85,19 @@ Es **una** imagen para todo el sitio, no una por entrada, y el motivo es estruct
 rutea por hash y el fragmento no viaja al servidor, así que el crawler lee siempre la portada.
 Una por entrada necesita sacar el ruteo por hash primero.
 
-**La cadena viernes → lunes, conectada.** `herramientas/preparar-publicacion.js` mueve el
-borrador, valida, construye, corre la suite, y **si algo falla deshace todo**. La tarea
-`cuaderno-publicar-lunes` (lunes 09:15) lo invoca y avisa. **No hay `git push` en ningún
-paso**: publicar sigue siendo un comando de Marcelo. La revisión humana la garantiza la
-estructura, no la memoria.
+**La cadena viernes → lunes, AUTOMÁTICA de punta a punta.**
+`herramientas/preparar-publicacion.js --publicar` mueve el borrador, valida, construye, corre
+la suite, commitea y **pushea**. Si algo falla, deshace todo. La tarea `cuaderno-publicar-lunes`
+(lunes 09:15) lo invoca, y **si el viernes no dejó borrador lo escribe ella misma** leyendo el
+avance real de VENTANA — no puede dejar al sitio sin entrada por una corrida muda.
+
+**Al sacar la revisión humana, los únicos guardianes son `validar.js` y `pruebas.js`.** Ahí se
+caza el hype, la cifra sin respaldo y el cierre que no es pregunta. Lo que ninguno puede cazar
+es que lo que cuenta la entrada sea FALSO: eso depende de que el borrador se escriba leyendo el
+avance real. **Aflojar un guard ahora tiene consecuencia directa en lo que ve un lector.**
+
+La primera corrida real fue el 2026-08-24: publicó «Ensayé la rutina y falló los cuatro casos»
+(`b406efe`), verificada contra el sitio real 80 segundos después del push.
 
 **El viernes ya no puede fallar callado.** Corrió el 2026-08-24 y no dejó ni un archivo, con
 material disponible. Ahora tiene que escribir el reporte SIEMPRE, decir en él por qué no hay
