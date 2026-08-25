@@ -121,7 +121,15 @@ if (!listo) {
 const titulo = (fs.readFileSync(rutaDestino, "utf8").match(/^titulo:\s*(.+)$/m) || [, destino])[1].trim();
 
 if (COMMIT) {
-  correr("git", ["add", "-A"]);
+  /* Se agrega SÓLO lo de esta publicación, nunca `git add -A`. El buzón
+     puede tener el borrador de otra semana esperando, y `-A` lo arrastraría
+     a un commit que dice publicar otra cosa. Pasó en el ensayo: un borrador
+     de prueba terminó dentro de un commit que no lo mencionaba.
+     El reporte de la semana sí entra: es el registro de dónde salió. */
+  const reporte = "reportes/" + destino.slice(0, 9) + ".md";   /* AAAA-Www */
+  const aAgregar = [path.join("contenido", destino), path.join("publico", "index.html")];
+  if (fs.existsSync(path.join(RAIZ, reporte))) aAgregar.push(reporte);
+  correr("git", ["add", "--", ...aAgregar]);
   correr("git", ["commit", "-m", titulo + "\n\nEntrada de la semana, preparada por la rutina del lunes.\n" +
     "Sin publicar: falta `git push origin main`.\n\nCo-Authored-By: Claude Opus 5 <noreply@anthropic.com>"]);
   console.log("\nCommit hecho, SIN pushear: " + correr("git", ["log", "--oneline", "-1"]).trim());
