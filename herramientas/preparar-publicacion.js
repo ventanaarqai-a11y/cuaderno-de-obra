@@ -54,10 +54,20 @@ const rutaDestino = path.join(CONTENIDO, destino);
 if (fs.existsSync(rutaDestino))
   salir(3, "Ya existe contenido/" + destino + ". El borrador quedaría pisando una entrada publicada.");
 
-/* ── 2. El repo tiene que estar limpio ───────────────────────────── */
-const sucio = correr("git", ["status", "--porcelain"]).trim();
+/* ── 2. Todo tiene que estar limpio, MENOS el buzón ──────────────────
+   Y no es un atajo: el viernes deja su reporte y su borrador en reportes/
+   sin commitear, así que ese directorio SIEMPRE tiene cambios cuando corre
+   el lunes. Exigir el repo entero limpio hacía que la rutina abortara todos
+   los lunes con «cambios sin commitear» — lo cazó el ensayo de punta a
+   punta, no la lectura del código.
+   Lo que sí tiene que estar limpio es el resto: algo a medias en contenido/
+   o en la plantilla se publicaría de rebote con la entrada de la semana. */
+const sucio = correr("git", ["status", "--porcelain"])
+  .split("\n")
+  .filter(l => l.trim() && !/^..\s+"?reportes\//.test(l))
+  .join("\n");
 if (sucio)
-  salir(3, "El repo tiene cambios sin commitear:\n" + sucio +
+  salir(3, "Hay cambios sin commitear fuera del buzón:\n" + sucio +
            "\nNo se mueve nada: mezclar esto con la publicación semanal deja un commit ilegible.");
 
 console.log("Borrador:  reportes/" + borrador);
