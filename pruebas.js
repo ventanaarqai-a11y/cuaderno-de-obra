@@ -287,7 +287,16 @@ DIAGRAMAS.forEach(d => {
 });
 
 titulo("el dibujo dice lo mismo que la cifra");
-const c0 = S.ENTRADAS[0].cifra;
+/* La entrada que USA el campo, no «la más reciente». Antes decía
+   ENTRADAS[0] y funcionaba de casualidad: la última entrada era la de
+   cobertura. El ensayo de la rutina del lunes lo destapó — al entrar una
+   entrada nueva con `diagrama: estados` y denominador 3, `svgCobertura`
+   abortaba con «el campo dibuja 2117 celdas y la cifra declara 3» y la
+   suite entera se ponía roja. O sea: cualquier semana cuya entrada no
+   fuera de cobertura habría bloqueado la publicación del lunes. */
+const entradaCobertura = S.ENTRADAS.find(e => e.diagrama === "cobertura");
+afirmar("hay una entrada que usa el campo de cobertura", !!entradaCobertura, true);
+const c0 = entradaCobertura.cifra;
 
 /* Los 2.085 apagados dejaron de ser 2.085 rectángulos y pasaron a ser UN
    elemento con patrón, así que ya no se pueden contar de a uno. Se afirma
@@ -314,7 +323,10 @@ afirmar("y el campo cubre exactamente el denominador", celdasDelCampo(svgF), 211
 const svgR = S.svgCobertura(c0);
 afirmar("la entrada real: encendidos = valor", encendidos(svgR), c0.valor);
 afirmar("la entrada real: campo = denominador", celdasDelCampo(svgR), c0.denominador);
-afirmar("y el campo llegó a la página", celdasDelCampo(vistas.home), c0.denominador);
+/* Y que el campo haya llegado a la PAGINA de esa entrada. Mirar la home
+   solo funcionaba mientras la entrada de cobertura fuera la mas reciente. */
+afirmar("y el campo llegó a la página",
+  celdasDelCampo(vistas["entrada:" + entradaCobertura.slug]), c0.denominador);
 
 /* La optimización, afirmada y no narrada: el SVG entero son los encendidos
    más el rectángulo del campo y la celda del patrón. Antes eran 2.117. */

@@ -106,7 +106,12 @@ try {
 }
 
 if (!listo) {
-  const quedo = correr("git", ["status", "--porcelain"]).trim();
+  /* Mismo filtro que el guard: el borrador vuelve al buzon sin commitear,
+     y eso es lo esperado — no un revert incompleto. */
+  const quedo = correr("git", ["status", "--porcelain"])
+    .split("\n")
+    .filter(l => l.trim() && !/^..\s+"?reportes\//.test(l))
+    .join("\n");
   console.log(quedo ? "AVISO: el repo NO quedó limpio:\n" + quedo
                     : "Repo limpio: el revert funcionó.");
   process.exit(1);
