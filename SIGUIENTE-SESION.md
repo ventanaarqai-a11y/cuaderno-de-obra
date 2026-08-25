@@ -28,6 +28,9 @@ Repo: `D:\INFORMACION\MARCA PERSONAL\cuaderno-de-obra` — rama `main`.
 | El pie con redes (LinkedIn, X) y correo de contacto | ✅ | |
 | La estructura (jerarquía, ejes, escala) | ✅ **aplicada: pico 9,4 → 2,5, ejes 3 → 1, tamaños 12 → 5** |
 | El pie de la lámina con leyenda, link y autoría | ✅ y el modelo de contenido ganó `fuente_url` y `analisis` |
+| La imagen de vista previa y sus meta tags | ✅ `publico/og.png` + el bloque entero, que no existía |
+| Las láminas: las cuatro con cuadro de referencias | ✅ con test que ejerce cada diagrama |
+| **La cadena viernes → lunes** | ✅ **conectada y ensayada de punta a punta** |
 | Fase 3 — el correo del lunes | ❌ no empezada |
 
 ## Lo que se hizo el 2026-08-21
@@ -70,6 +73,43 @@ midió en vivo a 1280 px:
 cuaderno está 4× afuera, y lo que domina es el nombre del producto, no lo que se lee.
 La propuesta completa está en `propuestas-ui/cuaderno-estructura.html`.
 
+## Lo que se hizo el 2026-08-22
+
+**La vista previa al compartir el link.** El sitio no tenía **ni un** meta tag: ni `og:`, ni
+`twitter:`, ni `description`. Compartirlo no mostraba una imagen rota — no mostraba nada.
+Ahora tiene el bloque entero y `publico/og.png`, que genera `herramientas/og.js` con
+Playwright y se commitea. **No es parte de `construir.js` a propósito**: el repo es Node puro
+sin una sola dependencia y esa propiedad vale.
+
+Es **una** imagen para todo el sitio, no una por entrada, y el motivo es estructural: el sitio
+rutea por hash y el fragmento no viaja al servidor, así que el crawler lee siempre la portada.
+Una por entrada necesita sacar el ruteo por hash primero.
+
+**La cadena viernes → lunes, conectada.** `herramientas/preparar-publicacion.js` mueve el
+borrador, valida, construye, corre la suite, y **si algo falla deshace todo**. La tarea
+`cuaderno-publicar-lunes` (lunes 09:15) lo invoca y avisa. **No hay `git push` en ningún
+paso**: publicar sigue siendo un comando de Marcelo. La revisión humana la garantiza la
+estructura, no la memoria.
+
+**El viernes ya no puede fallar callado.** Corrió el 2026-08-22 y no dejó ni un archivo, con
+material disponible. Ahora tiene que escribir el reporte SIEMPRE, decir en él por qué no hay
+borrador si no lo hay, y cerrar con un bloque de estado verificable que es lo que lee el lunes.
+
+**El ensayo encontró cuatro defectos que habrían roto la publicación todos los lunes**, y
+ninguno se veía leyendo el código:
+
+1. El guard de "repo limpio" no excluía el buzón — y el viernes deja ahí su borrador sin
+   commitear, así que la rutina habría abortado siempre.
+2. Un test tomaba `ENTRADAS[0]` y le exigía la cifra del campo de cobertura: **cualquier
+   entrada de otro diagrama ponía la suite en rojo**.
+3. Otras cuatro aserciones miraban la portada creyendo ver esa misma lámina.
+4. Un test estaba clavado a la fecha `2026-08-19` y caducaba con la primera entrada posterior.
+
+**Las cuatro entradas viejas** mostraban como fuente la ruta de un repo privado. Sus cifras son
+mediciones del propio proyecto —4 corridas de CI en rojo, 12 agentes, 28 mutaciones, 25
+commits— así que **no hay URL pública que linkear**: ahora dicen qué se midió y quién lo midió,
+sin inventarles un link.
+
 ## Lo abierto, en orden
 
 1. **Commitear y publicar.** Todo está verde, verificado y medido, pero **sin commitear**. El
@@ -99,7 +139,7 @@ cuaderno.
 - **Ninguna cifra sin `valor`, `denominador`, `unidad`, `que_mide` y `fuente`.** `validar.js`
   es la puerta y aborta con `archivo:línea`.
 - **Verde no es evidencia.** Cualquier prueba nueva se verifica rompiendo lo que dice proteger.
-  El barrido de hoy: **12 de 12 mutaciones cazadas por la aserción correcta**.
+  El barrido de hoy: **16 de 16 mutaciones cazadas por la aserción correcta**.
 - **La nota de tipografía salió del pie visible** pero la declaración de que Martian Mono es
   un SUSTITUTO de Oficía MONO vive en el comentario del bloque de tokens, con su test.
 - **El texto vive en `--tinta-62` o más oscuro.** `.45` y `.25` son para puntos y tramas.
