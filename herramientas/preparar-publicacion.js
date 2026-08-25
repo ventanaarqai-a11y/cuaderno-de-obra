@@ -1,8 +1,8 @@
 /* ===================================================================
    preparar-publicacion.js — mueve el borrador del viernes a contenido/,
-   reconstruye el sitio y verifica que todo pase. NO publica.
+   reconstruye el sitio, verifica que todo pase y —con --publicar— publica.
 
-   Uso:  node herramientas/preparar-publicacion.js [--commit] [--dry-run]
+   Uso:  node herramientas/preparar-publicacion.js [--publicar|--commit|--dry-run]
 
    POR QUÉ ES UN SCRIPT Y NO INSTRUCCIONES EN PROSA
    Lo corre una tarea programada un lunes a la mañana, sin nadie mirando.
@@ -11,16 +11,25 @@
    eso no se puede dejar librado a que un agente se acuerde de revertir.
    Acá el revert está en un `finally`.
 
-   LO QUE ESTE SCRIPT NO HACE, A PROPÓSITO: `git push`.
-   Publicar sigue siendo una decisión de Marcelo. El buzón `reportes/`
-   existe para que la revisión humana esté garantizada por la estructura y
-   no por acordarse; si este script pusheara, esa garantía desaparecería.
+   `--publicar` PUBLICA DE VERDAD: hace `git push` y la entrada sale a
+   elcuadernodeobra.com sin que nadie la haya leído.
+
+   Es una decisión explícita del dueño del 2026-08-24, que revocó el
+   esquema anterior de "dejar listo y esperar el OK". Lo que hay que tener
+   presente al tocar este archivo: **al sacar la revisión humana, los
+   únicos guardianes que quedan son `validar.js` y `pruebas.js`**. Ahí se
+   caza el hype, la cifra sin respaldo, la beta que no existe y el cierre
+   que no es pregunta. Lo que NO puede cazar ninguno de los dos es que lo
+   que cuenta la entrada sea falso: eso depende de que el borrador se haya
+   escrito leyendo el avance real. Aflojar un guard de validar.js ahora
+   tiene consecuencias directas en lo que ve un lector.
 
    Códigos de salida — la tarea del lunes los distingue:
-     0  listo para publicar
+     0  publicado (con --publicar) o listo para publicar
      2  no hay borrador (no es un error: no hubo semana)
      3  el repo no está limpio, no se toca nada
      1  el borrador no pasa: se revirtió todo
+     4  pasó todo pero el push falló: quedó commiteado sin publicar
    =================================================================== */
 const fs = require("fs");
 const path = require("path");
@@ -31,7 +40,8 @@ const REPORTES = path.join(RAIZ, "reportes");
 const CONTENIDO = path.join(RAIZ, "contenido");
 const SITIO = path.join(RAIZ, "publico", "index.html");
 
-const COMMIT = process.argv.includes("--commit");
+const PUBLICAR = process.argv.includes("--publicar");
+const COMMIT = process.argv.includes("--commit") || PUBLICAR;   /* publicar implica commitear */
 const ENSAYO = process.argv.includes("--dry-run");
 
 const correr = (cmd, args) => execFileSync(cmd, args, { cwd: RAIZ, encoding: "utf8", stdio: "pipe" });
@@ -117,7 +127,7 @@ if (!listo) {
   process.exit(1);
 }
 
-/* ── 4. Listo. El commit es opcional; el push no existe acá. ─────── */
+/* ── 4. Commitear ────────────────────────────────────────────────── */
 const titulo = (fs.readFileSync(rutaDestino, "utf8").match(/^titulo:\s*(.+)$/m) || [, destino])[1].trim();
 
 if (COMMIT) {
@@ -135,5 +145,33 @@ if (COMMIT) {
   console.log("\nCommit hecho, SIN pushear: " + correr("git", ["log", "--oneline", "-1"]).trim());
 }
 
-console.log("\nListo para publicar: «" + titulo + "»");
-console.log("Para publicarlo:\n  cd \"" + RAIZ + "\" && git push origin main");
+if (!PUBLICAR) {
+  console.log("\nListo para publicar: «" + titulo + "»");
+  console.log("Para publicarlo:\n  cd \"" + RAIZ + "\" && git push origin main");
+  process.exit(0);
+}
+
+/* ── 5. Publicar ─────────────────────────────────────────────────────
+   Un push puede reportar error y mover el ref igual, o reportar éxito y
+   no emitir el evento que dispara el deploy. Ya pasó en este repo. Así
+   que el resultado NO se lee de la salida del push: se lee del remoto. */
+console.log("\nPublicando…");
+let errorPush = null;
+try { correr("git", ["push", "origin", "main"]); }
+catch (e) { errorPush = String(e.stderr || e.stdout || e.message).trim(); }
+
+correr("git", ["fetch", "origin"]);
+const local = correr("git", ["rev-parse", "HEAD"]).trim();
+const remoto = correr("git", ["rev-parse", "origin/main"]).trim();
+
+if (local !== remoto) {
+  console.log("EL PUSH NO LLEGÓ. El commit está hecho pero la entrada NO está publicada.");
+  if (errorPush) console.log(errorPush.split("\n").slice(0, 4).join("\n"));
+  console.log("local  " + local.slice(0, 7) + "\nremoto " + remoto.slice(0, 7));
+  console.log("Se recupera con:  cd \"" + RAIZ + "\" && git push origin main");
+  process.exit(4);
+}
+
+console.log("PUBLICADO: «" + titulo + "»  ·  " + remoto.slice(0, 7));
+if (errorPush) console.log("(el push reportó un error pero el remoto avanzó igual)");
+console.log("Cloudflare Pages tarda uno o dos minutos en servir la versión nueva.");

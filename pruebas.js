@@ -179,8 +179,8 @@ if (fs.existsSync(OG)) {
    para que haya gente esperando cuando abra la beta. Un href vacío, un `#` o
    un placeholder sin reemplazar lo rompe sin que nadie se entere. */
 const pie = html.split('<footer')[1] || "";
-afirmar("el pie tiene las tres formas de contacto",
-  (pie.match(/href="(https?:\/\/|mailto:)[^"]+"/g) || []).length, 3);
+afirmar("el pie tiene las cuatro formas de contacto",
+  (pie.match(/href="(https?:\/\/|mailto:)[^"]+"/g) || []).length, 4);
 afirmar("ningún link del pie quedó sin completar",
   /href="(#|\s*|__[A-Z]+__|\.\.\.)"/.test(pie), false);
 afirmar("la hoja es hueso, no blanco puro", html.includes("--papel:    #FAF9F5;"), true);

@@ -2,7 +2,7 @@
    og.js — genera publico/og.png, la imagen de vista previa.
 
    Es lo que se ve al compartir el link en X, LinkedIn o WhatsApp, ANTES
-   de que nadie entre. Hasta el 2026-08-22 el sitio no tenía ninguna, ni
+   de que nadie entre. Hasta el 2026-08-24 el sitio no tenía ninguna, ni
    un solo meta tag: compartirlo no mostraba una imagen rota, no mostraba
    nada.
 

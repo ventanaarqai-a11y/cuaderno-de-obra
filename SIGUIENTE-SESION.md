@@ -73,7 +73,7 @@ midió en vivo a 1280 px:
 cuaderno está 4× afuera, y lo que domina es el nombre del producto, no lo que se lee.
 La propuesta completa está en `propuestas-ui/cuaderno-estructura.html`.
 
-## Lo que se hizo el 2026-08-22
+## Lo que se hizo el 2026-08-24
 
 **La vista previa al compartir el link.** El sitio no tenía **ni un** meta tag: ni `og:`, ni
 `twitter:`, ni `description`. Compartirlo no mostraba una imagen rota — no mostraba nada.
@@ -91,7 +91,7 @@ borrador, valida, construye, corre la suite, y **si algo falla deshace todo**. L
 paso**: publicar sigue siendo un comando de Marcelo. La revisión humana la garantiza la
 estructura, no la memoria.
 
-**El viernes ya no puede fallar callado.** Corrió el 2026-08-22 y no dejó ni un archivo, con
+**El viernes ya no puede fallar callado.** Corrió el 2026-08-24 y no dejó ni un archivo, con
 material disponible. Ahora tiene que escribir el reporte SIEMPRE, decir en él por qué no hay
 borrador si no lo hay, y cerrar con un bloque de estado verificable que es lo que lee el lunes.
 
