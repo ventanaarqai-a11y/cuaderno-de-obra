@@ -369,9 +369,18 @@ S.ENTRADAS.forEach(e => {
 /* ── 4. Agregar una entrada es agregar un archivo ─────────────────── */
 titulo("agregar una entrada no toca el diseño");
 const disenoAntes = html.split("<script>")[0];
+/* La fecha se DERIVA de la entrada más nueva que exista, no se clava.
+   Estaba fija en 2026-08-19 y el test afirma que la entrada de prueba queda
+   primera: en cuanto se publicó una entrada posterior —que es el trabajo
+   normal, todas las semanas— el test se puso rojo sin que nada estuviera
+   roto. Un test clavado a una fecha caduca solo, y este iba a caducar el
+   lunes siguiente. */
+const masNueva = entradas.map(e => e.fecha).sort().pop();
+const diaDespues = new Date(masNueva + "T12:00:00");
+diaDespues.setDate(diaDespues.getDate() + 1);
 const nueva = buena
   .replace(/^titulo: .*$/m, "titulo: Entrada de prueba que se borra sola")
-  .replace(/^fecha: .*$/m, "fecha: 2026-08-19")
+  .replace(/^fecha: .*$/m, "fecha: " + diaDespues.toISOString().slice(0, 10))
   .replace(/^revision: .*$/m, 'revision: "99"');
 fs.writeFileSync(tmp, nueva, "utf8");
 try {
