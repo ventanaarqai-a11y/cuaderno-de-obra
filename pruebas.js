@@ -137,6 +137,44 @@ afirmar("ni un hex del mundo oscuro en los diagramas",
   (html.match(/#(fafafa|333333|161616|111111|3d3d3d|2a2a2a|555555|888888|aaaaaa|1c1c1c|0d0d0d|050505|000000)\b/gi) || []), []);
 afirmar("el cuerpo se pinta papel", html.includes("background: var(--papel);"), true);
 
+/* La vista previa: lo que se ve al compartir el link antes de que nadie
+   entre. Se rompe en silencio de tres formas y las tres tienen su aserción:
+   que falte un tag, que og:image sea relativa (el archivo local se ve bien y
+   el crawler no la encuentra), y que el PNG no exista o no mida 1200x630. */
+titulo("la vista previa al compartir el link");
+const cabeza = html.split("</head>")[0];
+[["description", /<meta name="description" content="[^"]{60,}"/],
+ ["og:title", /<meta property="og:title" content="[^"]{10,}"/],
+ ["og:description", /<meta property="og:description" content="[^"]{60,}"/],
+ ["og:url", /<meta property="og:url" content="https:\/\//],
+ ["og:type", /<meta property="og:type"/],
+ ["og:image:alt", /<meta property="og:image:alt" content="[^"]{20,}"/],
+ ["twitter:card", /content="summary_large_image"/]
+].forEach(([que, re]) => afirmar("declara " + que.padEnd(16), re.test(cabeza), true));
+
+/* Absolutas, no relativas. Es LA falla clásica de una vista previa. */
+(html.match(/(?:og|twitter):image" content="([^"]+)"/g) || []).forEach(m => {
+  const url = m.match(/content="([^"]+)"/)[1];
+  afirmar("la imagen se pide absoluta", /^https:\/\//.test(url), true);
+});
+
+/* Y que el archivo exista de verdad, con la medida que piden las plataformas.
+   Un meta tag apuntando a un PNG que no está es peor que no tener el tag:
+   el crawler pide, no encuentra, y la tarjeta sale vacía. */
+const OG = path.join(RAIZ, "publico", "og.png");
+afirmar("la imagen existe en publico/", fs.existsSync(OG), true);
+if (fs.existsSync(OG)) {
+  const b = fs.readFileSync(OG);
+  /* Las dimensiones viven en el chunk IHDR de todo PNG, bytes 16-24. */
+  /* El PNG se renderiza a @2x para que no se vea blando en pantallas
+     retina: mide 2400x1260 fisicos y las plataformas lo escalan al 1200x630
+     que declaran los meta. La proporcion es lo que tiene que dar 1,905. */
+  afirmar("mide 2400x1260 (el 1200x630 a @2x)", [b.readUInt32BE(16), b.readUInt32BE(20)], [2400, 1260]);
+  afirmar("y respeta la proporcion 1.91:1",
+    Math.abs(b.readUInt32BE(16) / b.readUInt32BE(20) - 1200 / 630) < 0.01, true);
+  afirmar("pesa menos de 1 MB", b.length < 1024 * 1024, true);
+}
+
 /* El pie es la única forma de contacto que tiene el sitio: el cuaderno existe
    para que haya gente esperando cuando abra la beta. Un href vacío, un `#` o
    un placeholder sin reemplazar lo rompe sin que nadie se entere. */
@@ -192,7 +230,7 @@ titulo("renderizar");
 const js = html.match(/<script>([\s\S]*)<\/script>/)[1].split("const quieto = window.matchMedia")[0];
 global.window = { matchMedia: () => ({ matches: false }) };
 const ambito = {};
-eval(js + "\nObject.assign(ambito, { vistaHome, vistaIndice, vistaEntrada, ordenCajon, cifraHTML, posicionPorProgreso, svgCobertura, ENTRADAS, AREAS });");
+eval(js + "\nObject.assign(ambito, { vistaHome, vistaIndice, vistaEntrada, ordenCajon, cifraHTML, posicionPorProgreso, svgCobertura, diagramaDe, ENTRADAS, AREAS });");
 const S = ambito;
 
 const vistas = { home: S.vistaHome(), indice: S.vistaIndice(), "404": S.vistaEntrada("no-existe") };
@@ -229,6 +267,24 @@ const bloques = areasEnOrden.filter((a, i) => i === 0 || a !== areasEnOrden[i - 
 afirmar("un bloque por área, no uno por entrada", bloques.length, new Set(areasEnOrden).size);
 afirmar("un divisor por bloque", cuenta(vistas.indice, 'class="divisor"'), bloques.length);
 afirmar("una carpeta por entrada", cuenta(vistas.indice, 'class="carpeta"'), N);
+
+/* `cuaderno-diseno` §3: una lámina lleva rótulo, escala, cotas Y cuadro de
+   referencias — la leyenda es lo que convierte una trama de símbolos en algo
+   que alguien del rubro entiende sin preguntar. Dos de las cuatro láminas se
+   publicaron meses sin ella. Esto pone la regla en un test en vez de en la
+   buena voluntad: se ejerce CADA diagrama, no el que toca hoy. */
+titulo("ninguna lámina se publica sin leyenda");
+const DIAGRAMAS = ["cobertura", "agentes", "pipeline", "estados"];
+const cifraFalsa = { valor: 32, denominador: 2117, unidad: "municipios",
+                     que_mide: "Fabricada acá", fuente: "pruebas.js" };
+DIAGRAMAS.forEach(d => {
+  const html = S.diagramaDe({ diagrama: d, cifra: cifraFalsa });
+  const refs = html.split('class="lamina-refs"')[1] || "";
+  const simbolos = (refs.match(/class="ref-[a-z]+"/g) || []).length;
+  afirmar("la lámina de " + d.padEnd(10) + " declara sus símbolos", simbolos >= 2, true);
+  afirmar("la lámina de " + d.padEnd(10) + " trae lectura y fuente",
+    html.includes("Lectura —") && /Fuentes? —/.test(html), true);
+});
 
 titulo("el dibujo dice lo mismo que la cifra");
 const c0 = S.ENTRADAS[0].cifra;

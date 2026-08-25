@@ -3,7 +3,42 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>El Cuaderno de Obra</title>
+<title>El Cuaderno de Obra — el registro público de VENTANA</title>
+
+<!-- ===================================================================
+     Lo que se ve al compartir el link, ANTES de que nadie entre.
+     Hasta el 2026-08-22 no había NI UNO de estos: compartir el sitio en
+     X, LinkedIn o WhatsApp no mostraba una imagen rota — no mostraba nada.
+
+     og:image TIENE que ser absoluta. Una ruta relativa es la falla clásica:
+     el archivo local se ve bien, el navegador la resuelve bien, y el crawler
+     —que no tiene ese contexto— no la encuentra. Hay un test que lo verifica.
+
+     Es UNA imagen para todo el sitio, no una por entrada, y el motivo es
+     estructural: el sitio rutea por hash (#/entrada/slug) y el fragmento no
+     viaja al servidor, así que el crawler lee SIEMPRE la portada. Para tener
+     una por entrada hay que sacar el ruteo por hash primero.
+
+     La imagen la genera `node herramientas/og.js` y se commitea.
+     =================================================================== -->
+<meta name="description" content="Cómo se construye un diagnóstico de timing inmobiliario en LATAM. Una entrada por semana, con lo hecho y lo pendiente, y de dónde sale cada número.">
+<link rel="canonical" href="https://elcuadernodeobra.com/">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="El Cuaderno de Obra">
+<meta property="og:locale" content="es_AR">
+<meta property="og:url" content="https://elcuadernodeobra.com/">
+<meta property="og:title" content="El Cuaderno de Obra — el registro público de VENTANA">
+<meta property="og:description" content="Cómo se construye un diagnóstico de timing inmobiliario en LATAM. Una entrada por semana, con lo hecho y lo pendiente, y de dónde sale cada número.">
+<meta property="og:image" content="https://elcuadernodeobra.com/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="El Cuaderno de Obra: un cuadro por municipio argentino, 32 de 2.117 con precio de mercado medido.">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="El Cuaderno de Obra — el registro público de VENTANA">
+<meta name="twitter:description" content="Cómo se construye un diagnóstico de timing inmobiliario en LATAM. Una entrada por semana, con lo hecho y lo pendiente, y de dónde sale cada número.">
+<meta name="twitter:image" content="https://elcuadernodeobra.com/og.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Martian+Mono:wdth,wght@75..112.5,300..800&family=Prompt:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap">
@@ -404,6 +439,15 @@ img, svg { max-width: 100%; }
 .lamina-refs i { display: block; flex: 0 0 auto; }
 .ref-lleno { width: 9px; height: 9px; background: var(--tinta); }
 .ref-vacio { width: 5px; height: 5px; margin: 2px; background: var(--tinta-25); }
+/* La misma trama a 45° que marca el cuello en la lámina del proceso. */
+.ref-trama { width: 11px; height: 11px; border: 1px solid var(--tinta);
+  background-image: repeating-linear-gradient(45deg, var(--tinta-45) 0 1.4px, transparent 1.4px 6px); }
+.ref-caja  { width: 11px; height: 11px; border: 1px solid var(--linea-2); background: var(--papel-2); }
+/* El tilde y la cruz se dibujan, no se escriben: un carácter tipográfico
+   cambia de forma según la fuente que llegue a cargar. */
+.ref-tilde, .ref-cruz { width: 11px; height: 11px; background-repeat: no-repeat; background-position: center; }
+.ref-tilde { background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2 6.5l2.6 2.6L10 3.4' fill='none' stroke='%23141413' stroke-width='1.6'/%3E%3C/svg%3E"); }
+.ref-cruz  { background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2.6 2.6l6.8 6.8M9.4 2.6l-6.8 6.8' fill='none' stroke='%236b6b69' stroke-width='1.6'/%3E%3C/svg%3E"); }
 .svg-diagrama { display: block; width: 100%; height: auto; min-width: 520px; }
 .trazo { stroke: var(--linea-2); stroke-width: 1; fill: none; }
 .trazo-fino { stroke: var(--linea); stroke-width: 1; fill: none; }
@@ -599,7 +643,8 @@ const ENTRADAS = [
       "denominador": 25,
       "unidad": "commits",
       "que_mide": "Commits que estaban en disco y no en el servidor",
-      "fuente": "docs/handoffs/CONTINUIDAD_DATOS.md §1"
+      "fuente": "Historial del repositorio de VENTANA",
+      "analisis": "Medición propia de VENTANA · agosto 2026"
     },
     "cuerpo": [
       "Un plano terminado, un plano enviado y un plano del que ya se está construyendo son tres cosas distintas. En una obra nadie las confunde. Yo las confundí seis días seguidos.",
@@ -644,7 +689,8 @@ const ENTRADAS = [
       "denominador": 12,
       "unidad": "agentes",
       "que_mide": "Agentes con unidad natural y cobertura medida",
-      "fuente": "docs/handoffs/CONTINUIDAD_DATOS.md §1"
+      "fuente": "Auditoría de cobertura de los doce agentes de VENTANA",
+      "analisis": "Medición propia de VENTANA · agosto 2026"
     },
     "cuerpo": [
       "Un porcentaje de cobertura sin denominador escrito de antemano no es una medición: es una opinión con formato de número. Diez de los doce agentes venían dando esa opinión.",
@@ -689,7 +735,8 @@ const ENTRADAS = [
       "denominador": 28,
       "unidad": "mutaciones",
       "que_mide": "Defectos inyectados a propósito que los tests detectaron",
-      "fuente": "docs/ESTADO_Y_PRIORIDADES.md §Fase C"
+      "fuente": "Barrido de mutación sobre el extractor de VENTANA",
+      "analisis": "Medición propia de VENTANA · agosto 2026"
     },
     "cuerpo": [
       "Le inyecté veintiocho errores a propósito a mi propio sistema, uno por uno, para ver si los controles se daban cuenta.",
@@ -734,7 +781,8 @@ const ENTRADAS = [
       "denominador": 4,
       "unidad": "corridas",
       "que_mide": "Corridas de integración en rojo antes de que alguien las leyera",
-      "fuente": "docs/ESTADO_Y_PRIORIDADES.md §Sesión 2026-08-10"
+      "fuente": "Registro de integración continua de VENTANA",
+      "analisis": "Medición propia de VENTANA · agosto 2026"
     },
     "cuerpo": [
       "Cualquiera que haya recibido una obra empezada conoce esto: el parte dice una cosa y el registro dice otra. Me pasó con mi propio proyecto, y me costó días.",
@@ -1017,9 +1065,15 @@ function diagramaDe(e) {
     svgAgentes("MA"), pieLamina(e.cifra, '<span><i class="ref-lleno"></i>El agente de esta entrada</span><span><i class="ref-vacio"></i>Los otros once</span>',
       "el peso ordena cuánto mueve cada agente el puntaje final; suma 100 %."));
   if (e.diagrama === "pipeline")  return laminaHTML("De la fuente al razonamiento", "Lám. 03 · esquema de proceso",
-    svgPipeline(1), pieLamina(e.cifra, "", "un dato que no llega al último paso no existe para el agente que decide."));
+    svgPipeline(1), pieLamina(e.cifra,
+      '<span><i class="ref-trama"></i>El paso donde estaba el cuello</span>' +
+      '<span><i class="ref-caja"></i>Los pasos que ya fluían</span>',
+      "un dato que no llega al último paso no existe para el agente que decide."));
   if (e.diagrama === "estados")   return laminaHTML("Guardado, publicado, en producción", "Lám. 04 · estados",
-    svgEstados(), pieLamina(e.cifra, "", "los tres son estados distintos del mismo trabajo, y sólo el tercero lo ve alguien."));
+    svgEstados(), pieLamina(e.cifra,
+      '<span><i class="ref-tilde"></i>Hecho</span>' +
+      '<span><i class="ref-cruz"></i>Todavía no</span>',
+      "los tres son estados distintos del mismo trabajo, y sólo el tercero lo ve alguien."));
   return "";
 }
 

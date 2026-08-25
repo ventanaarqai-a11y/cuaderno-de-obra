@@ -13,7 +13,8 @@ cifra:
   denominador: 25
   unidad: commits
   que_mide: Commits que estaban en disco y no en el servidor
-  fuente: docs/handoffs/CONTINUIDAD_DATOS.md §1
+  fuente: Historial del repositorio de VENTANA
+  analisis: Medición propia de VENTANA · agosto 2026
 checklist:
   - hecho: Los 25 commits publicados en el servidor
   - hecho: Comando de control documentado en el handoff

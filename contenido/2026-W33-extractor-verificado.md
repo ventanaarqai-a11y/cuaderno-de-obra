@@ -13,7 +13,8 @@ cifra:
   denominador: 28
   unidad: mutaciones
   que_mide: Defectos inyectados a propósito que los tests detectaron
-  fuente: docs/ESTADO_Y_PRIORIDADES.md §Fase C
+  fuente: Barrido de mutación sobre el extractor de VENTANA
+  analisis: Medición propia de VENTANA · agosto 2026
 checklist:
   - hecho: Transcripción por modelo con verificación literal
   - hecho: 28 de 28 mutaciones detectadas

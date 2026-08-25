@@ -13,7 +13,8 @@ cifra:
   denominador: 4
   unidad: corridas
   que_mide: Corridas de integración en rojo antes de que alguien las leyera
-  fuente: docs/ESTADO_Y_PRIORIDADES.md §Sesión 2026-08-10
+  fuente: Registro de integración continua de VENTANA
+  analisis: Medición propia de VENTANA · agosto 2026
 checklist:
   - hecho: Causa raíz reproducida antes de arreglar
   - hecho: Guarda agregada en todas las revisiones que crean el objeto

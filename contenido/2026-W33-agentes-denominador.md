@@ -13,7 +13,8 @@ cifra:
   denominador: 12
   unidad: agentes
   que_mide: Agentes con unidad natural y cobertura medida
-  fuente: docs/handoffs/CONTINUIDAD_DATOS.md §1
+  fuente: Auditoría de cobertura de los doce agentes de VENTANA
+  analisis: Medición propia de VENTANA · agosto 2026
 checklist:
   - hecho: Unidad natural declarada para los 12 agentes
   - hecho: Cobertura medida contra un denominador real
