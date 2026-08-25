@@ -343,7 +343,12 @@ afirmarQueFalla("aborta si el campo no cubre el denominador",
    leyenda, un cuadro lleno y uno vacío no significan nada para quien llega.
    Y la fuente tiene que ser algo que el lector pueda abrir — el pie decía
    `docs/ESTADO_Y_PRIORIDADES.md §Fase E`, la ruta de un repo privado. */
-const laminaCobertura = vistas.home.split('class="lamina"')[1] || "";
+/* De la página de la entrada que USA el campo, no de la home. La home
+   muestra la entrada más reciente, y en cuanto entra una de otro diagrama
+   —que es lo normal— estas cuatro aserciones miran una lámina que no es la
+   que dicen mirar. Lo destapó el ensayo de la rutina del lunes: dos se
+   pusieron rojas por eso y habrían bloqueado la publicación de la semana. */
+const laminaCobertura = vistas["entrada:" + entradaCobertura.slug].split('class="lamina"')[1] || "";
 afirmar("la lámina de cobertura declara sus referencias",
   cuenta(laminaCobertura, 'class="ref-lleno"') === 1 && cuenta(laminaCobertura, 'class="ref-vacio"') === 1, true);
 afirmar("los dos números de la leyenda suman el denominador",
