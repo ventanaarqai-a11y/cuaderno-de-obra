@@ -578,6 +578,62 @@ img, svg { max-width: 100%; }
    =================================================================== */
 const ENTRADAS = [
   {
+    "slug": "2026-w38-corregido-no-es-instalado",
+    "fecha": "2026-09-12",
+    "semana": 38,
+    "revision": "01",
+    "area": "infra",
+    "firma": "Marcelo Acurio",
+    "titulo": "Corregí cuatro errores reales, y ninguno salió",
+    "resumen": "Una auditoría de punta a punta encontró cuatro fallas reales en lo que recibe el cliente —entre ellas, un número de inflación que el sistema se calculaba solo en vez de usar el que el propio organismo ya publica. Las cuatro están corregidas y probadas. Ninguna llegó todavía a lo que el cliente ve.",
+    "cita": "Corregido y verificado no es lo mismo que instalado.",
+    "diagrama": "estados",
+    "cifra": {
+      "valor": 4,
+      "denominador": 4,
+      "unidad": "correcciones",
+      "que_mide": "Errores reales encontrados y corregidos en la auditoría de esta quincena que todavía no llegaron al informe que recibe el cliente",
+      "fuente": "Auditoría interna de punta a punta de VENTANA sobre el informe real que recibe el cliente, y registro de publicación del repositorio",
+      "analisis": "Medición propia de VENTANA · septiembre 2026"
+    },
+    "cuerpo": [
+      "Le hice una auditoría de punta a punta al informe que recibe el cliente, dos veces, como si\nfuera una obra ajena y no la mía. Encontré cuatro errores reales. Los corregí, los probé\nrompiéndolos a propósito para ver si el control los detectaba, y los di por cerrados. Ninguno\nde los cuatro llegó todavía a lo que el cliente efectivamente ve.",
+      "## El número que me armaba solo",
+      "El más caro de los cuatro estaba en la inflación anual de Argentina, uno de los datos que más\npesa en el diagnóstico. El sistema la calculaba por su cuenta: tomaba el dato mensual y lo\nmultiplicaba por doce. El mismo organismo que publica ese dato mensual publica también la\nvariación interanual real, mes contra el mismo mes del año anterior — el número que de verdad\nimporta cuando pensás una escalación de obra. Los dos números no coincidían. La cuenta propia\ndaba ocho puntos y medio menos que el dato oficial.",
+      "Ocho puntos y medio no es un redondeo. Es la diferencia entre presupuestar con un índice que\nvos armaste y presupuestar con el que publica quien tiene la autoridad para publicarlo. Ese\nnúmero entraba a tres cálculos distintos del diagnóstico al mismo tiempo, sin que nada lo\nmarcara como una estimación casera.",
+      "## Corregido no es lo mismo que instalado",
+      "Arreglé los cuatro. Los probé rompiéndolos a propósito, uno por uno, para confirmar que si\nalguien volvía a introducir el mismo error, algo lo iba a agarrar. Los cuatro pasaron esa\nprueba. Escribí el resultado, con la fecha y el motivo de cada uno, en la carpeta donde\nllevo el registro del avance.",
+      "Y ahí quedaron. En la carpeta de correcciones, no en la que usa la obra.",
+      "**Corregido y verificado no es lo mismo que instalado.** Es la misma distancia que hay entre\nfirmar una modificación de proyecto y que la cuadrilla reciba el plano nuevo: si el plano\ncorregido se queda en el escritorio, la obra sigue construyendo con el error, aunque en la\noficina esté todo prolijamente resuelto. Van dos semanas seguidas encontrando esta misma\ndistancia — la vez anterior era trabajo sin enviar; esta vez es trabajo enviado a medias,\nque llegó hasta la carpeta de revisión y no un paso más allá.",
+      "## Lo que queda abierto",
+      "Las cuatro correcciones están firmadas. La carpeta que efectivamente se usa para lo que ve el\ncliente sigue siendo la de antes. No hay una moraleja prolija para esto todavía — hay una\ncarpeta que falta mover, y una razón por la que no se movió sola que todavía no encontré.",
+      "Cuando te toca aplicar un ajuste de obra por inflación: ¿usás el índice que publica el\norganismo oficial, o armás vos la cuenta con los datos que tenés a mano?"
+    ],
+    "cta": "Cuando te toca aplicar un ajuste de obra por inflación, ¿usás el índice que publica el organismo oficial, o armás la cuenta con los datos que tenés a mano?",
+    "checklist": [
+      {
+        "estado": "hecho",
+        "texto": "Se corrió el diagnóstico real dos veces y se auditó cada número contra su fuente en vivo"
+      },
+      {
+        "estado": "hecho",
+        "texto": "El número de inflación pasó a usar el dato que el organismo ya publica, no una cuenta propia"
+      },
+      {
+        "estado": "hecho",
+        "texto": "Los cuatro arreglos se probaron rompiéndolos a propósito, para confirmar que el control los agarraba"
+      },
+      {
+        "estado": "pendiente",
+        "texto": "Que las cuatro correcciones lleguen a lo que el cliente efectivamente recibe"
+      },
+      {
+        "estado": "bloqueado",
+        "texto": "Publicar esta rama a producción"
+      }
+    ]
+  },
+  {
     "slug": "2026-w37-provincia-no-es-ciudad",
     "fecha": "2026-09-04",
     "semana": 37,
